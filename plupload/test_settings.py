@@ -10,6 +10,7 @@ DATABASES = {
         'NAME': ':memory:',
     }
 }
+UPLOAD_ROOT = '/tmp'
 SECRET_KEY = 'fake key'
 INSTALLED_APPS = [
     'plupload'

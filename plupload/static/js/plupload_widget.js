@@ -21,6 +21,7 @@ var create_uploader = function(params) {
                 $('#' + params['id']).val(path + "/" + file.name);
             },
             PostInit: function() {
+<<<<<<< HEAD
                 document.getElementById('filelist').innerHTML = '';
 
                 document.getElementById('uploadfiles').onclick = function() {
@@ -60,6 +61,20 @@ var create_uploader = function(params) {
             Error: function(up, err) {
                 document.getElementById('console').appendChild(document.createTextNode("\nError #" + err.code + ": " + err.message));
             }
+
+            BeforeUpload: function(up, file) {
+                console.log(file);
+                post_values = {
+                    'filename':  file.name,
+                    'csrfmiddlewaretoken': csrf_token,
+                    'model': $('input[name="model"]').val(),
+                    'pk': $('input[name="pk"]').val()
+                }
+                $.post(
+                    params['url'] + "upload_start",
+                    post_values
+                );
+            },
 
         }
     });
