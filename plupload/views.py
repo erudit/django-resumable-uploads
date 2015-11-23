@@ -5,7 +5,7 @@ import json
 from django.http import HttpResponse, Http404
 from django.conf import settings
 from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 
 from plupload.helpers import (
     upload_exists, namespace_exists, create_namespace, path_for_upload,
@@ -66,8 +66,6 @@ def get_upload_identifiers_or_404(request):
     )
 
 
-
-
 def upload_file(request):
 
     identifiers = get_upload_identifiers_or_404(request)
@@ -75,20 +73,44 @@ def upload_file(request):
 
     if request.method == 'POST' and request.FILES:
         dir_fd = os.open(
-            settings.UPLOAD_ROOT,
+            resumable_file.path,
             os.O_RDONLY
         )
         os.fchdir(dir_fd)
 
         for _file in request.FILES:
-            handle_uploaded_file(request.FILES[_file],
-                                 request.POST.get('chunk', 0),
-                                 request.POST['name'])
+            handle_uploaded_file(
+                request.FILES[_file],
+                request.POST.get('chunk', 0),
+                request.POST['name']
+            )
         os.close(dir_fd)
         # response only to notify plUpload that the upload was successful
         return HttpResponse()
     else:
         raise Http404
+
+
+def handle_uploaded_file(f, chunk, filename):
+    """
+    Here you can do whatever you like with your files, like resize them if they
+    are images
+    :param f: the file
+    :param chunk: number of chunk to save
+    """
+
+    if int(chunk) > 0:
+        # opens for append
+        _file = open(filename, 'ab')
+    else:
+        # erases content
+        _file = open(filename, 'wb')
+
+    if f.multiple_chunks:
+        for chunk in f.chunks():
+            _file.write(chunk)
+    else:
+        _file.write(f.read())
 
 
 def upload_start(request):
@@ -121,28 +143,6 @@ def upload_error(request):
     resumable_file.status = ResumableFileStatus.ERROR
     resumable_file.save()
     return HttpResponse()
-
-
-def handle_uploaded_file(f, chunk, filename):
-    """
-    Here you can do whatever you like with your files, like resize them if they
-    are images
-    :param f: the file
-    :param chunk: number of chunk to save
-    """
-
-    if int(chunk) > 0:
-        # opens for append
-        _file = open(filename, 'ab')
-    else:
-        # erases content
-        _file = open(filename, 'wb')
-
-    if f.multiple_chunks:
-        for chunk in f.chunks():
-            _file.write(chunk)
-    else:
-        _file.write(f.read())
 
 
 def del_file(request, year, month, day):
