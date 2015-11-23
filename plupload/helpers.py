@@ -1,6 +1,22 @@
 import os
 
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+
+from plupload.models import ResumableFile
+
+
+def get_resumable_file_by_identifiers_or_404(model, pk, filename):
+
+    resumable_file = get_object_or_404(
+        ResumableFile,
+        path=path_for_upload(
+            model, pk, filename
+        )
+    )
+
+    return resumable_file
+
 
 def path_for_namespace(model_name, model_pk):
     """ Return the absolute path of a namespace """

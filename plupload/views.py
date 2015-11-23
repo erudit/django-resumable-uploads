@@ -7,7 +7,11 @@ from django.conf import settings
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 
-from plupload.helpers import upload_exists, namespace_exists, create_namespace, path_for_upload
+from plupload.helpers import (
+    upload_exists, namespace_exists, create_namespace, path_for_upload,
+    get_resumable_file_by_identifiers_or_404
+)
+
 from plupload.models import ResumableFile, ResumableFileStatus
 
 
@@ -40,7 +44,35 @@ def upload_custom(request):
                               template_vars_template)
 
 
+def get_upload_identifiers_or_404(request):
+    """ Test that the upload identifiers are present in POST
+
+    Raise Http404 if model, pk or filename is missing.
+    """
+    request_keys = request.POST.keys()
+
+    verified_keys = [
+        key in request_keys
+        for key in ('model', 'pk', 'filename')
+    ]
+
+    if not all(verified_keys):
+        raise Http404
+
+    return (
+        request.POST['model'],
+        request.POST['pk'],
+        request.POST['filename']
+    )
+
+
+
+
 def upload_file(request):
+
+    identifiers = get_upload_identifiers_or_404(request)
+    resumable_file = get_resumable_file_by_identifiers_or_404(*identifiers)
+
     if request.method == 'POST' and request.FILES:
         dir_fd = os.open(
             settings.UPLOAD_ROOT,
@@ -57,24 +89,6 @@ def upload_file(request):
         return HttpResponse()
     else:
         raise Http404
-
-
-def get_upload_identifiers_or_404(request):
-    request_keys = request.POST.keys()
-
-    verified_keys = [
-        key in request_keys
-        for key in ('model', 'pk', 'filename')
-    ]
-
-    if not all(verified_keys):
-        raise Http404
-
-    return (
-        request.POST['model'],
-        request.POST['pk'],
-        request.POST['filename']
-    )
 
 
 def upload_start(request):
@@ -102,15 +116,8 @@ def upload_start(request):
 
 
 def upload_error(request):
-    model_name, model_pk, filename = get_upload_identifiers_or_404(request)
-
-    resumable_file = get_object_or_404(
-        ResumableFile,
-        pk=model_pk, path=path_for_upload(
-            model_name, model_pk, filename
-        )
-    )
-
+    identifiers = get_upload_identifiers_or_404(request)
+    resumable_file = get_resumable_file_by_identifiers_or_404(*identifiers)
     resumable_file.status = ResumableFileStatus.ERROR
     resumable_file.save()
     return HttpResponse()
