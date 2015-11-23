@@ -1,12 +1,14 @@
 from django.db import models
 from django.conf import settings
 from django.test import TestCase, RequestFactory
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 
 import mock
 
 from plupload.models import ResumableFile, ResumableFileStatus
-from plupload.views import upload_start, upload_error, get_upload_identifiers_or_404
+from plupload.views import (
+    upload_start, upload_error, get_upload_identifiers_or_404, upload_file
+)
 from plupload.forms import PlUploadFormField
 from plupload.fields import ResumableFileField
 from plupload.helpers import (
@@ -20,6 +22,31 @@ class TestUploadViews(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
+
+        self.sample_file =  ResumableFile(
+            pk=2,
+            path=path_for_upload(
+                "IssueSubmission",
+                "2",
+                "test.png"
+            ),
+            status=ResumableFileStatus.NEW
+        ).save()
+
+    def test_upload_file_raises_400_when_malformed(self):
+        request = self.factory.post(
+            'plupload/upload_start',
+            {'model': 'IssueSubmission', 'pk': 2, 'filename': 'test.png'}
+        )
+
+        result = upload_file(request)
+
+        self.assertEquals(
+            result,
+            HttpResponseBadRequest,
+            "A request with no file should return an HttpBadRequest"
+        )
+
 
     def test_get_upload_identifiers_or_404(self):
         request = self.factory.post(
@@ -89,7 +116,6 @@ class TestUploadViews(TestCase):
         )
 
         response = upload_error(request)
-
         resumable_file_count = ResumableFile.objects.filter(
             path=path_for_upload(
                 "IssueSubmission",

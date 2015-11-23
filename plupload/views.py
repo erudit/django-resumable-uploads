@@ -2,7 +2,7 @@ import os
 import datetime
 import json
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from django.conf import settings
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -88,7 +88,7 @@ def upload_file(request):
         # response only to notify plUpload that the upload was successful
         return HttpResponse()
     else:
-        raise Http404
+        return HttpResponseBadRequest
 
 
 def handle_uploaded_file(f, chunk, filename):
