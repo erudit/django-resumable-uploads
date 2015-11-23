@@ -15,61 +15,11 @@ from plupload.helpers import (
 )
 
 
-class TestResumableFileField(TestCase):
+class TestUploadViews(TestCase):
+    """ Test the upload cases """
 
     def setUp(self):
-        class MyTestModel(models.Model):
-            my_field = ResumableFileField(upload_to='test_files')
-
-        self.test_model_class = MyTestModel
         self.factory = RequestFactory()
-        settings.UPLOAD_ROOT = '/tmp'
-
-    def test_directory_creation_no_upload_root(self):
-        """ Test that AttributeError is raised when no UPLOAD_ROOT """
-        from django.conf import settings
-        del(settings.UPLOAD_ROOT)
-        self.assertRaises(
-            AttributeError,
-            self.test_model_class().save
-        )
-
-    def test_path_for_namespace(self):
-        """ Test that the paths for the namespace are properly sets """
-        self.assertEquals(
-            path_for_namespace(
-                'IssueSubmission',
-                '1',
-            ),
-            '/tmp/IssueSubmission/1'
-        )
-
-    def test_path_for_upload(self):
-        """ Test that the upload paths are set properly """
-        self.assertEquals(
-            path_for_upload(
-                'IssueSubmission',
-                '1',
-                'david.png'
-            ),
-            '/tmp/IssueSubmission/1/david.png'
-        )
-
-    def test_upload_exists(self):
-        """ Test that the uploads exist """
-
-        with mock.patch('plupload.helpers.namespace_exists', lambda x, y: False):
-            self.assertFalse(
-                upload_exists('IssueSubmission', '1', 'test.png'),
-                "The upload should not exists if the namespace does not exist"
-            )
-
-        with mock.patch('plupload.helpers.namespace_exists', lambda x, y: True):
-            with mock.patch('os.path.exists', lambda x: True):
-                self.assertTrue(
-                    upload_exists('IssueSubmission', '1', 'test.png'),
-                    "The upload should exist when the namespace and file exists"
-                )
 
     def test_get_upload_identifiers_or_404(self):
         request = self.factory.post(
@@ -154,6 +104,63 @@ class TestResumableFileField(TestCase):
             1,
             "The ResumableFile should have failed"
         )
+
+
+class TestResumableFileField(TestCase):
+
+    def setUp(self):
+        class MyTestModel(models.Model):
+            my_field = ResumableFileField(upload_to='test_files')
+
+        self.test_model_class = MyTestModel
+        self.factory = RequestFactory()
+        settings.UPLOAD_ROOT = '/tmp'
+
+    def test_directory_creation_no_upload_root(self):
+        """ Test that AttributeError is raised when no UPLOAD_ROOT """
+        from django.conf import settings
+        del(settings.UPLOAD_ROOT)
+        self.assertRaises(
+            AttributeError,
+            self.test_model_class().save
+        )
+
+    def test_path_for_namespace(self):
+        """ Test that the paths for the namespace are properly sets """
+        self.assertEquals(
+            path_for_namespace(
+                'IssueSubmission',
+                '1',
+            ),
+            '/tmp/IssueSubmission/1'
+        )
+
+    def test_path_for_upload(self):
+        """ Test that the upload paths are set properly """
+        self.assertEquals(
+            path_for_upload(
+                'IssueSubmission',
+                '1',
+                'david.png'
+            ),
+            '/tmp/IssueSubmission/1/david.png'
+        )
+
+    def test_upload_exists(self):
+        """ Test that the uploads exist """
+
+        with mock.patch('plupload.helpers.namespace_exists', lambda x, y: False):
+            self.assertFalse(
+                upload_exists('IssueSubmission', '1', 'test.png'),
+                "The upload should not exists if the namespace does not exist"
+            )
+
+        with mock.patch('plupload.helpers.namespace_exists', lambda x, y: True):
+            with mock.patch('os.path.exists', lambda x: True):
+                self.assertTrue(
+                    upload_exists('IssueSubmission', '1', 'test.png'),
+                    "The upload should exist when the namespace and file exists"
+                )
 
     def test_directory_creation(self):
         """ Test that the directory is created when the field is saved """
