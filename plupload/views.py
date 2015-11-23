@@ -72,19 +72,12 @@ def upload_file(request):
     resumable_file = get_resumable_file_by_identifiers_or_404(*identifiers)
 
     if request.method == 'POST' and request.FILES:
-        dir_fd = os.open(
-            resumable_file.path,
-            os.O_RDONLY
-        )
-        os.fchdir(dir_fd)
-
         for _file in request.FILES:
             handle_uploaded_file(
                 request.FILES[_file],
                 request.POST.get('chunk', 0),
                 request.POST['name']
             )
-        os.close(dir_fd)
         # response only to notify plUpload that the upload was successful
         return HttpResponse()
     else:
