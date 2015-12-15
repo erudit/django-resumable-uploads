@@ -6,23 +6,89 @@
 
 <input{{ final_attrs }} style="display: none;">
 
-<div id="filelist">Your browser doesn't have Flash, Silverlight or HTML5 support.</div>
-<br />
+<style>
+  .upload-container {
+    width: 100%;
+  }
+  .upload-table thead {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+  }
+  .upload-table thead th, .upload-table tfoot td {
+    padding: 0.5em 0.25em;
+    color: rgba(0, 0, 0, 0.5);
+  }
+  .heading-name {
+    width: 60%;
+  }
+  .heading-size {
+    width: 10%;
+  }
+  .heading-status {
+    width: 20%;
+  }
+  .heading-delete {
+    width: 10%;
+  }
+  .file-name {
+  }
+  .file-size {
+    white-space: nowrap;
+  }
+  .file-status {
+  }
+  .file-delete {
+    text-align: center;
+    vertical-align: middle;
+    margin: auto;
+  }
+  .plupload_droptext {
+    height: 100px;
+    font-size: 1em;
+    line-height: 100px;
+    text-align: center;
+  }
+</style>
 
-<div id="container">
-    <a id="pickfiles" href="javascript:;">[Select files]</a>
-    <a id="uploadfiles" href="javascript:;">[Upload files]</a>
+<div class="upload-container">
+  <table class="upload-table">
+    <thead>
+      <tr>
+        <th class="heading-name">Fichier</th>
+        <th class="heading-size">Taille</th>
+        <th class="heading-status">Statut</th>
+        <th class="heading-delete">Supprimer</th>
+      </tr>
+    </thead>
+    <tbody id="filelist">
+      <tr>
+        <td colspan="4">Votre navigateur ne supporte pas les technologies Flash, Silverlight ou HTML5.</td>
+      </tr>
+      <tr class="plupload_droptext">
+        <td colspan="4">Veuillez glisser-déposer vos fichiers de production ici.</td>
+      </tr>
+    </tbody>
+    <tfoot id="container">
+      <tr>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <a id="pickfiles" href="javascript:;">Ajouter un fichier</a>
+          <a id="uploadfiles" href="javascript:;">Téléverser</a>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
 </div>
 
-<br />
 <pre id="console"></pre>
-
+<hr/>
 
 <script type="text/javascript">
-  var json_params = JSON.parse('{{ json_params }}');
-  $(function() {
-      create_uploader(
-          json_params
-      );
-  });
+var json_params = JSON.parse('{{ json_params }}');
+$(function() {
+  create_uploader(
+    json_params
+  );
+});
 </script>
