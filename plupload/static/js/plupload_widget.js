@@ -13,11 +13,6 @@ var create_uploader = function(params) {
         unique_names : false,
         multipart_params: {"csrfmiddlewaretoken" : csrf_token },
 
-        filters : [
-            {title : "Image files", extensions : "jpg,gif,png"},
-            {title : "Zip files", extensions : "zip"}
-        ],
-
         // Silverlight settings
         silverlight_xap_url : params['STATIC_URL'] + 'js/Moxie.xap',
 
@@ -35,12 +30,29 @@ var create_uploader = function(params) {
 	    },
 	    FilesAdded: function(up, files) {
 		plupload.each(files, function(file) {
-		    document.getElementById('filelist').innerHTML += '<div id="' + file.id + '">' + file.name + ' (' + plupload.formatSize(file.size) + ') <b></b></div>';
+        var fileStatus = '<span class="progress"><span class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</span></span>';
+        var fileDelete = '<a href="#"><span class="fa fa-remove"></span></a>';
+		    document.getElementById('filelist').innerHTML +=
+            '<tr id="' +
+            file.id +
+            '"><td class="file-name"><span>' +
+            file.type +
+            '</span> ' +
+            file.name +
+            '</td><td class="file-size">' +
+            plupload.formatSize(file.size) +
+            '</td><td class="file-status">' +
+            fileStatus +
+            '</td><td class="file-delete">' +
+            fileDelete +
+            '</td></tr>';
 		});
 	    },
 
 	    UploadProgress: function(up, file) {
-		document.getElementById(file.id).getElementsByTagName('b')[0].innerHTML = '<span>' + file.percent + "%</span>";
+          var progressBar = document.getElementById(file.id).getElementsByClassName('progress-bar')[0];
+          progressBar.innerHTML = file.percent + "%";
+          progressBar.style.width = file.percent + "%";
 	    },
 
 	    Error: function(up, err) {
@@ -51,4 +63,4 @@ var create_uploader = function(params) {
     });
 
     uploader.init();
-}
+};
