@@ -53,7 +53,7 @@ def get_upload_identifiers_or_404(request):
 
     verified_keys = [
         key in request_keys
-        for key in ('model', 'pk', 'filename')
+        for key in ('model', 'pk', 'name')
     ]
 
     if not all(verified_keys):
@@ -62,7 +62,7 @@ def get_upload_identifiers_or_404(request):
     return (
         request.POST['model'],
         request.POST['pk'],
-        request.POST['filename']
+        request.POST['name']
     )
 
 

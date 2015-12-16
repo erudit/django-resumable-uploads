@@ -38,7 +38,7 @@ class TestUploadViews(TestCase):
     def test_upload_file_raises_400_when_malformed(self):
         request = self.factory.post(
             'plupload/upload_start',
-            {'model': 'IssueSubmission', 'pk': 2, 'filename': 'test.png'}
+            {'model': 'IssueSubmission', 'pk': 2, 'name': 'test.png'}
         )
 
         result = upload_file(request)
@@ -57,7 +57,7 @@ class TestUploadViews(TestCase):
             {
                 'model': 'IssueSubmission',
                 'pk': 2,
-                'filename': 'test.png',
+                'name': 'test.png',
                 "chunk": 1
             }
         )
@@ -82,7 +82,7 @@ class TestUploadViews(TestCase):
             {
                 'model': 'IssueSubmission',
                 'pk': 2,
-                'filename': 'test.png',
+                'name': 'test.png',
                 "chunk": 0
             }
         )
@@ -100,7 +100,7 @@ class TestUploadViews(TestCase):
     def test_get_upload_identifiers_or_404(self):
         request = self.factory.post(
             'plupload/upload_start',
-            {'model': 'IssueSubmission', 'pk': 1, 'filename': 'test.png'}
+            {'model': 'IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
         name_pk_filename = get_upload_identifiers_or_404(request)
@@ -125,7 +125,7 @@ class TestUploadViews(TestCase):
 
         request = self.factory.post(
             'plupload/upload_start',
-            {'model': 'IssueSubmission', 'pk': 1, 'filename': 'test.png'}
+            {'model': 'IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
         with mock.patch('os.makedirs', mock.MagicMock(spec=os.makedirs)):
@@ -153,7 +153,7 @@ class TestUploadViews(TestCase):
 
         request = self.factory.post(
             'plupload/upload_start',
-            {'model': 'IssueSubmission', 'pk': 1, 'filename': 'test.png'}
+            {'model': 'IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
         with mock.patch('os.makedirs', mock.MagicMock(spec=os.makedirs)):
@@ -161,7 +161,7 @@ class TestUploadViews(TestCase):
 
         request = self.factory.post(
             'plupload/upload_error',
-            {'model': 'IssueSubmission', 'pk': 1, 'filename': 'test.png'}
+            {'model': 'IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
         response = upload_error(request)

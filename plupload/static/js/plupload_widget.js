@@ -69,7 +69,7 @@ var create_uploader = function(params) {
             BeforeUpload: function(up, file) {
                 console.log(file);
                 post_values = {
-                    'filename':  file.name,
+                    'name':  file.name,
                     'csrfmiddlewaretoken': csrf_token,
                     "model": String(params['model_name']),
                     "pk": String(params['model_id'])
