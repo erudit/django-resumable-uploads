@@ -9,7 +9,7 @@ import mock
 
 from plupload.models import ResumableFile, ResumableFileStatus
 from plupload.views import (
-    upload_start, upload_error, get_upload_identifiers_or_404, upload_file
+    upload_error, get_upload_identifiers_or_404, upload_file
 )
 from plupload.forms import PlUploadFormField
 from plupload.fields import ResumableFileField
@@ -37,7 +37,7 @@ class TestUploadViews(TestCase):
 
     def test_upload_file_raises_400_when_malformed(self):
         request = self.factory.post(
-            'plupload/upload_start',
+            '/plupload/',
             {'model': 'IssueSubmission', 'pk': 2, 'name': 'test.png'}
         )
 
@@ -53,7 +53,7 @@ class TestUploadViews(TestCase):
         """ Test that chunks are appended to the file """
 
         request = self.factory.post(
-            'plupload/upload_start',
+            '/plupload/',
             {
                 'model': 'IssueSubmission',
                 'pk': 2,
@@ -78,7 +78,7 @@ class TestUploadViews(TestCase):
     def test_create_file(self):
         """ Test that files are created when no chunk is sent """
         request = self.factory.post(
-            'plupload/upload_start',
+            '/plupload/',
             {
                 'model': 'IssueSubmission',
                 'pk': 2,
@@ -99,7 +99,7 @@ class TestUploadViews(TestCase):
 
     def test_get_upload_identifiers_or_404(self):
         request = self.factory.post(
-            'plupload/upload_start',
+            '/plupload/',
             {'model': 'IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
@@ -111,7 +111,7 @@ class TestUploadViews(TestCase):
         )
 
         request = self.factory.post(
-            'plupload/upload_start',
+            '/plupload/',
         )
 
         self.assertRaises(
@@ -124,13 +124,13 @@ class TestUploadViews(TestCase):
         import os
 
         request = self.factory.post(
-            'plupload/upload_start',
+            '/plupload/',
             {'model': 'IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
         with mock.patch('os.makedirs', mock.MagicMock(spec=os.makedirs)):
 
-            upload_start(request)
+            upload_file(request)
 
             resumable_file_count = ResumableFile.objects.filter(
                 path=path_for_upload(
@@ -152,12 +152,12 @@ class TestUploadViews(TestCase):
         import os
 
         request = self.factory.post(
-            'plupload/upload_start',
+            '/plupload/',
             {'model': 'IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
         with mock.patch('os.makedirs', mock.MagicMock(spec=os.makedirs)):
-            upload_start(request)
+            upload_file(request)
 
         request = self.factory.post(
             'plupload/upload_error',

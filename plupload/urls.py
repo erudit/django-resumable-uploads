@@ -7,10 +7,6 @@ urlpatterns = patterns(
         name='upload_form'),
 
     # the url where the upload petition is processed
-    url(r'^plupload/upload_start', 'plupload.views.upload_start',
-        name='upload_start'),
-
-    # the url where the upload petition is processed
     url(r'^plupload/', 'plupload.views.upload_file',
         name='upload_file'),
 

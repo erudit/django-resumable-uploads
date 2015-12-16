@@ -68,9 +68,20 @@ def get_upload_identifiers_or_404(request):
 
 def upload_file(request):
 
-    identifiers = get_upload_identifiers_or_404(request)
+    model_name, model_pk, filename = get_upload_identifiers_or_404(request)
 
-    resumable_file = get_resumable_file_by_identifiers_or_404(*identifiers)
+    if not namespace_exists(model_name, model_pk):
+        create_namespace(model_name, model_pk)
+
+    resumable_file, created = ResumableFile.objects.get_or_create(
+        path=path_for_upload(
+            model_name, model_pk, filename
+        )
+    )
+
+    if created:
+        resumable_file.status = ResumableFileStatus.NEW
+        resumable_file.save()
 
     if request.method == 'POST' and request.FILES:
         for _file in request.FILES:
@@ -106,30 +117,6 @@ def handle_uploaded_file(f, chunk, resumable_file):
             _file.write(chunk)
     else:
         _file.write(f.read())
-
-
-def upload_start(request):
-    """ The view that is called when an upload is started
-
-    If the upload does not exist, it will be created
-    """
-    model_name, model_pk, filename = get_upload_identifiers_or_404(request)
-
-    if not upload_exists(model_name, model_pk, filename):
-
-        if not namespace_exists(model_name, model_pk):
-            create_namespace(model_name, model_pk)
-
-        ResumableFile(
-            path=path_for_upload(
-                model_name,
-                model_pk,
-                filename
-            ),
-            status=ResumableFileStatus.NEW
-        ).save()
-
-    return HttpResponse()
 
 
 def upload_error(request):

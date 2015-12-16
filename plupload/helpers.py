@@ -7,6 +7,7 @@ from plupload.models import ResumableFile
 
 
 def get_resumable_file_by_identifiers_or_404(model, pk, filename):
+    # TODO: Link to model should be tested explicitely.
 
     resumable_file = get_object_or_404(
         ResumableFile,
