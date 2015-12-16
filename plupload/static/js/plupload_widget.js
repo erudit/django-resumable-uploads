@@ -11,7 +11,11 @@ var create_uploader = function(params) {
         max_file_size : params['max_file_size'],
         chunk_size : params['chunk_size'],
         unique_names : false,
-        multipart_params: {"csrfmiddlewaretoken" : csrf_token },
+        multipart_params: {
+            "csrfmiddlewaretoken" : csrf_token,
+            "model": String(params['model_name']),
+            "pk": String(params['model_id'])
+        },
 
         // Silverlight settings
         silverlight_xap_url : params['STATIC_URL'] + 'js/Moxie.xap',
@@ -67,8 +71,8 @@ var create_uploader = function(params) {
                 post_values = {
                     'filename':  file.name,
                     'csrfmiddlewaretoken': csrf_token,
-                    'model': $('input[name="model"]').val(),
-                    'pk': $('input[name="pk"]').val()
+                    "model": String(params['model_name']),
+                    "pk": String(params['model_id'])
                 }
                 $.post(
                     params['url'] + "upload_start",
