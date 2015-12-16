@@ -69,6 +69,7 @@ def get_upload_identifiers_or_404(request):
 def upload_file(request):
 
     identifiers = get_upload_identifiers_or_404(request)
+
     resumable_file = get_resumable_file_by_identifiers_or_404(*identifiers)
 
     if request.method == 'POST' and request.FILES:
@@ -76,7 +77,7 @@ def upload_file(request):
             handle_uploaded_file(
                 request.FILES[_file],
                 request.POST.get('chunk', 0),
-                request.POST['name']
+                resumable_file,
             )
         # response only to notify plUpload that the upload was successful
         return HttpResponse()
@@ -84,7 +85,7 @@ def upload_file(request):
         return HttpResponseBadRequest
 
 
-def handle_uploaded_file(f, chunk, filename):
+def handle_uploaded_file(f, chunk, resumable_file):
     """
     Here you can do whatever you like with your files, like resize them if they
     are images
@@ -92,12 +93,13 @@ def handle_uploaded_file(f, chunk, filename):
     :param chunk: number of chunk to save
     """
 
+
     if int(chunk) > 0:
         # opens for append
-        _file = open(filename, 'ab')
+        _file = open(resumable_file.path, 'ab')
     else:
         # erases content
-        _file = open(filename, 'wb')
+        _file = open(resumable_file.path, 'wb')
 
     if f.multiple_chunks:
         for chunk in f.chunks():

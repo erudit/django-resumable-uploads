@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
+from django.core.files.uploadedfile import UploadedFile
 from django.test import TestCase, RequestFactory
 from django.http import Http404, HttpResponseBadRequest
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 import mock
 
@@ -23,7 +25,7 @@ class TestUploadViews(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-        self.sample_file =  ResumableFile(
+        self.sample_file = ResumableFile(
             pk=2,
             path=path_for_upload(
                 "IssueSubmission",
@@ -47,6 +49,53 @@ class TestUploadViews(TestCase):
             "A request with no file should return an HttpBadRequest"
         )
 
+    def test_append_file(self):
+        """ Test that chunks are appended to the file """
+
+        request = self.factory.post(
+            'plupload/upload_start',
+            {
+                'model': 'IssueSubmission',
+                'pk': 2,
+                'filename': 'test.png',
+                "chunk": 1
+            }
+        )
+
+        request.FILES['file'] = mock.MagicMock(spec=UploadedFile)
+
+        mocked_file = mock.Mock()
+        mocked_file.multiple_chunks = False
+
+        with mock.patch("builtins.open", mock.MagicMock()) as mock_file:
+            upload_file(request)
+
+        mock_file.assert_called_once_with(
+            path_for_upload('IssueSubmission', '2', 'test.png'),
+            'ab'
+        )
+
+    def test_create_file(self):
+        """ Test that files are created when no chunk is sent """
+        request = self.factory.post(
+            'plupload/upload_start',
+            {
+                'model': 'IssueSubmission',
+                'pk': 2,
+                'filename': 'test.png',
+                "chunk": 0
+            }
+        )
+
+        request.FILES['file'] = mock.MagicMock(spec=UploadedFile)
+
+        with mock.patch("builtins.open", mock.MagicMock()) as mock_file:
+            upload_file(request)
+
+        mock_file.assert_called_once_with(
+            path_for_upload('IssueSubmission', '2', 'test.png'),
+            'wb'
+        )
 
     def test_get_upload_identifiers_or_404(self):
         request = self.factory.post(
@@ -208,7 +257,7 @@ class TestResumableFileField(TestCase):
         # pre_save is not called on creation
         # so we need to update
 
-        """ my_test_model.save()
+        my_test_model.save()
         self.assertEquals(
             os.makedirs.call_count,
             1,
@@ -222,7 +271,7 @@ class TestResumableFileField(TestCase):
                     settings.UPLOAD_ROOT
                 )
             )
-        )"""
+        )
 
 
 class TestPluploadWidgetOptions(TestCase):
