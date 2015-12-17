@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from django.template.loader import get_template
 from django.conf import settings
 from django.template.context_processors import csrf
-from django.forms.util import flatatt
+from django.forms.utils import flatatt
 from django.core.urlresolvers import reverse
 
 import json
