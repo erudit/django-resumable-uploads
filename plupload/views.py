@@ -66,6 +66,20 @@ def get_upload_identifiers_or_404(request):
     )
 
 
+def set_file_info(request):
+
+    model_name, model_pk, filename = get_upload_identifiers_or_404(request)
+
+    if not namespace_exists(model_name, model_pk):
+        create_namespace(model_name, model_pk)
+
+    resumable_file = get_or_create_resumable_file(model_name, model_pk, filename)
+
+    resumable_file.filesize = int(request.POST['filesize'])
+    resumable_file.save()
+    return HttpResponse()
+
+
 def upload_file(request):
 
     model_name, model_pk, filename = get_upload_identifiers_or_404(request)
@@ -76,6 +90,8 @@ def upload_file(request):
     resumable_file = get_or_create_resumable_file(model_name, model_pk, filename)
 
     if request.method == 'POST' and request.FILES:
+        # TODO: handle multiple files
+
         for _file in request.FILES:
             handle_uploaded_file(
                 request.FILES[_file],
@@ -108,7 +124,8 @@ def handle_uploaded_file(f, chunk, resumable_file):
             _file.write(chunk)
     else:
         _file.write(f.read())
-
+    resumable_file.uploadsize = _file.tell()
+    resumable_file.save()
 
 def upload_error(request):
     identifiers = get_upload_identifiers_or_404(request)

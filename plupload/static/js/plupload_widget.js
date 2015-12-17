@@ -1,4 +1,4 @@
-var create_uploader = function(params) {
+var create_uploader = function(params, filesizes) {
     var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
     var path = params['path'];
 
@@ -21,6 +21,26 @@ var create_uploader = function(params) {
         silverlight_xap_url : params['STATIC_URL'] + 'js/Moxie.xap',
 
         init: {
+            StateChanged: function(up) {
+
+                if (up.state == plupload.STARTED) {
+                    for (var file_id in up.files) {
+                        var file = up.files[file_id];
+                        post_values = {
+                            'name':  file.name,
+                            'csrfmiddlewaretoken': csrf_token,
+                            "model": String(params['model_name']),
+                            "pk": String(params['model_id']),
+                            "filesize": file.size,
+                        }
+                        $.post(
+                            params['url'] + "set_file_info",
+                            post_values
+                        );
+                    }
+                }
+            },
+
             FileUploaded: function(up, file, info) {
                 $('#' + params['id']).val(path + "/" + file.name);
             },
