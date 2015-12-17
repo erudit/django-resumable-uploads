@@ -1,0 +1,125 @@
+.upload-container {
+  width: 100%;
+}
+.upload-table thead {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+.upload-table thead th, .upload-table tfoot td {
+  padding: 0.5em 0.25em;
+  color: rgba(0, 0, 0, 0.5);
+}
+.upload-table tbody td {
+  vertical-align: middle;
+}
+.upload-table tfoot {
+  border-top: 2px solid rgba(0, 0, 0, 0.05);
+}
+.heading-type {
+  width: 5%;
+}
+.heading-name {
+  width: 60%;
+}
+.heading-size {
+  width: 10%;
+  text-align: right;
+}
+.heading-status {
+  width: 20%;
+  text-align: center;
+}
+.heading-delete {
+  width: 5%;
+}
+.file-type {
+  text-align: center;
+}
+.file-name {
+  max-width: 65%;
+  word-break: break-all;
+}
+.file-size {
+  white-space: nowrap;
+  text-align: right;
+}
+.file-status {
+  font-weight: 600;
+  overflow: hidden;
+  background: transparent;
+}
+.file-status .progress-bar {
+  float: left;
+  width: 0;
+  height: 100%;
+  font-size: 0.85em;
+  color: #fff;
+  text-align: center;
+  background-color: #AF2329;
+  -webkit-transition: width 300ms ease-in-out;
+  -o-transition: width 300ms ease-in-out;
+  transition: width 300ms ease-in-out;
+}
+.file-delete {
+  text-align: center;
+  margin: auto;
+}
+.droptext {
+  height: 100px;
+  font-size: 1em;
+  line-height: 100px;
+  text-align: center;
+}
+
+/* Icons - FontAwesome */
+.icon-file {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1.5em;
+  color: rgba(0, 0, 0, 0.35);
+}
+.icon-file:before {
+  content: "\f016";
+}
+.icon-image-png:before,
+.icon-jpg:before,
+.icon-jpeg:before,
+.icon-gif:before,
+.icon-tiff:before,
+.icon-tif:before,
+.icon-png:before {
+  content: "\f1c5";
+}
+.icon-zip:before,
+.icon-gzip:before {
+  content: "\f1c6";
+}
+.icon-pdf:before {
+  content: "\f1c1";
+}
+.icon-xml:before,
+.icon-html:before,
+.icon-json:before {
+  content: "\f1c9";
+}
+.icon-xls:before,
+.icon-xlsx:before {
+  content: "\f1c3";
+}
+.icon-doc:before,
+.icon-docx:before {
+  content: "\f1c2";
+}
+.icon-txt:before,
+.icon-md:before,
+.icon-mdown:before,
+.icon-markdown:before {
+  content: "\f0f6";
+}
+.icon-ppt:before,
+.icon-pptx:before {
+  content: "\f1c4";
+}
