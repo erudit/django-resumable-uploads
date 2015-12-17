@@ -8,8 +8,8 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 from plupload.helpers import (
-    upload_exists, namespace_exists, create_namespace, path_for_upload,
-    get_resumable_file_by_identifiers_or_404
+    namespace_exists, create_namespace, path_for_upload,
+    get_resumable_file_by_identifiers_or_404, get_or_create_resumable_file
 )
 
 from plupload.models import ResumableFile, ResumableFileStatus
@@ -73,15 +73,7 @@ def upload_file(request):
     if not namespace_exists(model_name, model_pk):
         create_namespace(model_name, model_pk)
 
-    resumable_file, created = ResumableFile.objects.get_or_create(
-        path=path_for_upload(
-            model_name, model_pk, filename
-        )
-    )
-
-    if created:
-        resumable_file.status = ResumableFileStatus.NEW
-        resumable_file.save()
+    resumable_file = get_or_create_resumable_file(model_name, model_pk, filename)
 
     if request.method == 'POST' and request.FILES:
         for _file in request.FILES:
@@ -103,7 +95,6 @@ def handle_uploaded_file(f, chunk, resumable_file):
     :param f: the file
     :param chunk: number of chunk to save
     """
-
 
     if int(chunk) > 0:
         # opens for append
