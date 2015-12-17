@@ -1,3 +1,4 @@
+import json
 from os import path
 
 from django.forms.widgets import Input
@@ -8,7 +9,7 @@ from django.template.context_processors import csrf
 from django.forms.utils import flatatt
 from django.core.urlresolvers import reverse
 
-import json
+from plupload.models import ResumableFile
 
 
 class PlUploadWidget(Input):
@@ -37,6 +38,19 @@ class PlUploadWidget(Input):
             "plupload_widget.html"
         )
 
+        resumable_files = ResumableFile.objects.filter(
+            pk__in=value
+        )
+
+        resumable_file_values = [
+            {
+                'status': rf.status,
+                'filename': rf.get_filename(),
+                'percent': rf.get_percent()
+            }
+            for rf in resumable_files
+        ]
+
         upload_rel_path = path.relpath(
             settings.UPLOAD_ROOT,
             settings.MEDIA_ROOT
@@ -54,7 +68,8 @@ class PlUploadWidget(Input):
             'id': final_attrs['id'],
             'csrf_token': csrf(name),
             'final_attrs': flatatt(final_attrs),
-            'json_params': mark_safe(json.dumps(self.widget_options))
+            'json_params': mark_safe(json.dumps(self.widget_options)),
+            'files': resumable_file_values,
         }
 
         return mark_safe(
