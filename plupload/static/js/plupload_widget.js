@@ -30,14 +30,16 @@ var create_uploader = function(params) {
 	    },
 	    FilesAdded: function(up, files) {
 		plupload.each(files, function(file) {
-        var fileStatus = '<span class="progress"><span class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</span></span>';
-        var fileDelete = '<a href="#"><span class="fa fa-remove"></span></a>';
+        var fileStatus = '<span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</span>';
+        var fileDelete = '<a href="#" class="icon-upload icon-delete"></a>';
+        var fileName = file.name;
+        var fileType = fileName.substr(fileName.lastIndexOf('.') + 1).toLowerCase();
 		    document.getElementById('filelist').innerHTML +=
             '<tr id="' +
             file.id +
-            '"><td class="file-name"><span>' +
-            file.type +
-            '</span> ' +
+            '"><td class="file-type"><span class="icon-file icon-' +
+            fileType +
+            '"></span></td><td class="file-name">' +
             file.name +
             '</td><td class="file-size">' +
             plupload.formatSize(file.size) +

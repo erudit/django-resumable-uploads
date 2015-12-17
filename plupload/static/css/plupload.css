@@ -1,11 +1,11 @@
-.upload-container {
+.upload-table {
   width: 100%;
 }
 .upload-table thead {
   border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
 .upload-table thead th, .upload-table tfoot td {
-  padding: 0.5em 0.25em;
+  padding: 0.5em 0;
   color: rgba(0, 0, 0, 0.5);
 }
 .upload-table tbody td {
@@ -13,6 +13,9 @@
 }
 .upload-table tfoot {
   border-top: 2px solid rgba(0, 0, 0, 0.05);
+}
+.upload-action {
+  margin-right: 1em;
 }
 .heading-type {
   width: 5%;
@@ -63,14 +66,45 @@
   text-align: center;
   margin: auto;
 }
-.droptext {
-  height: 100px;
+.drop {
   font-size: 1em;
-  line-height: 100px;
   text-align: center;
 }
+.drop td {
+  padding: 3em;
+}
+.drop-icon .icon-file {
+  font-size: 3em;
+  color: #AF2329;
+}
+.drop-text {
+  color: rgba(0, 0, 0, 0.5);
+  font-style: italic;
+  margin-top: 1.5em;
+}
 
-/* Icons - FontAwesome */
+/*** Icons - FontAwesome ***/
+/* Editing icons */
+.icon-upload {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1em;
+}
+.icon-add:before {
+  content: "\f055";
+}
+.icon-upload:before {
+  content: "\f0ee";
+}
+.icon-delete:before {
+  content: "\f00d";
+}
+
+/* File type icons */
 .icon-file {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
