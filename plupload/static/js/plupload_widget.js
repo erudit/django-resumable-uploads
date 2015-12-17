@@ -13,11 +13,6 @@ var create_uploader = function(params) {
         unique_names : false,
         multipart_params: {"csrfmiddlewaretoken" : csrf_token },
 
-        filters : [
-            {title : "Image files", extensions : "jpg,gif,png"},
-            {title : "Zip files", extensions : "zip"}
-        ],
-
         // Silverlight settings
         silverlight_xap_url : params['STATIC_URL'] + 'js/Moxie.xap',
 
@@ -26,29 +21,48 @@ var create_uploader = function(params) {
                 $('#' + params['id']).val(path + "/" + file.name);
             },
             PostInit: function() {
-		document.getElementById('filelist').innerHTML = '';
+                document.getElementById('filelist').innerHTML = '';
 
-		document.getElementById('uploadfiles').onclick = function() {
-		    uploader.start();
-		    return false;
-		};
-	    },
-	    FilesAdded: function(up, files) {
-		plupload.each(files, function(file) {
-		    document.getElementById('filelist').innerHTML += '<div id="' + file.id + '">' + file.name + ' (' + plupload.formatSize(file.size) + ') <b></b></div>';
-		});
-	    },
+                document.getElementById('uploadfiles').onclick = function() {
+                    uploader.start();
+                    return false;
+                };
+            },
+            FilesAdded: function(up, files) {
+                plupload.each(files, function(file) {
+                    var fileStatus = '<span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</span>';
+                    var fileDelete = '<a href="#" class="icon-upload icon-delete"></a>';
+                    var fileName = file.name;
+                    var fileType = fileName.substr(fileName.lastIndexOf('.') + 1).toLowerCase();
+                    document.getElementById('filelist').innerHTML +=
+                    '<tr id="' +
+                    file.id +
+                    '"><td class="file-type"><span class="icon-file icon-' +
+                    fileType +
+                    '"></span></td><td class="file-name">' +
+                    file.name +
+                    '</td><td class="file-size">' +
+                    plupload.formatSize(file.size) +
+                    '</td><td class="file-status">' +
+                    fileStatus +
+                    '</td><td class="file-delete">' +
+                    fileDelete +
+                    '</td></tr>';
+                });
+            },
 
-	    UploadProgress: function(up, file) {
-		document.getElementById(file.id).getElementsByTagName('b')[0].innerHTML = '<span>' + file.percent + "%</span>";
-	    },
+            UploadProgress: function(up, file) {
+                var progressBar = document.getElementById(file.id).getElementsByClassName('progress-bar')[0];
+                progressBar.innerHTML = file.percent + "%";
+                progressBar.style.width = file.percent + "%";
+            },
 
-	    Error: function(up, err) {
-		document.getElementById('console').appendChild(document.createTextNode("\nError #" + err.code + ": " + err.message));
-	    }
+            Error: function(up, err) {
+                document.getElementById('console').appendChild(document.createTextNode("\nError #" + err.code + ": " + err.message));
+            }
 
         }
     });
 
     uploader.init();
-}
+};
