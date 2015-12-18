@@ -1,3 +1,14 @@
+/* Icons - FontAwesome */
+.upload-table [class^="icon-"] {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Upload table layout */
 .upload-table {
   width: 100%;
 }
@@ -5,8 +16,7 @@
   border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
 .upload-table thead th, .upload-table tfoot td {
-  padding: 0.5em 0;
-  color: rgba(0, 0, 0, 0.5);
+  padding: 0.75em 0;
 }
 .upload-table tbody td {
   vertical-align: middle;
@@ -45,6 +55,12 @@
   white-space: nowrap;
   text-align: right;
 }
+.file-delete {
+  text-align: center;
+  margin: auto;
+}
+
+/* Progress bar */
 .file-status {
   font-weight: 600;
   overflow: hidden;
@@ -58,40 +74,61 @@
   color: #fff;
   text-align: center;
   background-color: #AF2329;
-  -webkit-transition: width 300ms ease-in-out;
-  -o-transition: width 300ms ease-in-out;
-  transition: width 300ms ease-in-out;
-}
-.file-delete {
-  text-align: center;
-  margin: auto;
-}
-.drop {
-  font-size: 1em;
-  text-align: center;
-}
-.drop td {
-  padding: 3em;
-}
-.drop-icon .icon-file {
-  font-size: 3em;
-  color: #AF2329;
-}
-.drop-text {
-  color: rgba(0, 0, 0, 0.5);
-  font-style: italic;
-  margin-top: 1.5em;
+  -webkit-transition: width 300ms ease;
+  -o-transition: width 300ms ease;
+  transition: width 300ms ease;
 }
 
-/*** Icons - FontAwesome ***/
-/* Editing icons */
-.icon-upload {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Drag & drop area */
+.filedrop {
+  font-size: 1em;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.35);
+}
+.filedrop td {
+  padding: 1.5em;
+}
+.filedrop .drop-circle {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  padding: 1.5em;
+  border: 2px dashed rgba(0, 0, 0, 0.25);
+  -moz-border-radius: 100px;
+  -webkit-border-radius: 100px;
+  border-radius: 100px;
+  display: flex;
+  justify-content: center;
+  -webkit-transition: all 150ms ease-in;
+  -o-transition: all 150ms ease-in;
+  transition: all 150ms ease-in;
+}
+.drop-message {
+  align-self: center;
+}
+.drop-icon .icon-upload {
+  font-size: 3.5em;
+  color: rgba(0, 0, 0, 0.25);
+}
+.drop-text {
+  font-style: italic;
+  margin-top: 0.25em;
+}
+
+/* Drag & drop when dragging */
+.filedrop.dragging {
+  color: #FFF;
+}
+.filedrop.dragging .drop-circle {
+  border: 2px solid #AF2329;
+  background: #AF2329;
+}
+.filedrop.dragging .drop-icon .icon-upload {
+  color: #FFF;
+}
+
+/* Action icons */
+.icon-action {
   font-size: 1em;
 }
 .icon-add:before {
@@ -106,19 +143,13 @@
 
 /* File type icons */
 .icon-file {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-size: 1.5em;
   color: rgba(0, 0, 0, 0.35);
 }
 .icon-file:before {
   content: "\f016";
 }
-.icon-image-png:before,
+.icon-bmp:before,
 .icon-jpg:before,
 .icon-jpeg:before,
 .icon-gif:before,
@@ -128,7 +159,11 @@
   content: "\f1c5";
 }
 .icon-zip:before,
-.icon-gzip:before {
+.icon-gzip:before,
+.icon-rar:before,
+.icon-tar:before,
+.icon-gz:before,
+.icon-zipx:before {
   content: "\f1c6";
 }
 .icon-pdf:before {
@@ -156,4 +191,57 @@
 .icon-ppt:before,
 .icon-pptx:before {
   content: "\f1c4";
+}
+.icon-wav:before,
+.icon-mp3:before,
+.icon-fla:before,
+.icon-flac:before,
+.icon-ra:before,
+.icon-rma:before,
+.icon-aif:before,
+.icon-aiff:before,
+.icon-aa:before,
+.icon-aac:before,
+.icon-aax:before,
+.icon-ac3:before,
+.icon-au:before,
+.icon-ogg:before,
+.icon-avr:before,
+.icon-3ga:before,
+.icon-flac:before,
+.icon-mid:before,
+.icon-midi:before,
+.icon-m4a:before,
+.icon-mp4a:before,
+.icon-amz:before,
+.icon-mka:before,
+.icon-asx:before,
+.icon-pcm:before,
+.icon-m3u:before,
+.icon-wma:before,
+.icon-xwma:before, {
+  content: "\f1c7";
+}
+.icon-avi:before,
+.icon-mpg:before,
+.icon-mp4:before,
+.icon-mkv:before,
+.icon-mov:before,
+.icon-wmv:before,
+.icon-vp6:before,
+.icon-264:before,
+.icon-vid:before,
+.icon-rv:before,
+.icon-webm:before,
+.icon-swf:before,
+.icon-h264:before,
+.icon-flv:before,
+.icon-mk3d:before,
+.icon-gifv:before,
+.icon-oggv:before,
+.icon-3gp:before,
+.icon-m4v:before,
+.icon-movie:before,
+.icon-divx:before {
+  content: "\f1c8";
 }
