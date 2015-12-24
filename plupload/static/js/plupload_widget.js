@@ -23,7 +23,6 @@ var create_uploader = function(params, filesizes) {
 
         init: {
             StateChanged: function(up) {
-
                 if (up.state == plupload.STARTED) {
                     for (var file_id in up.files) {
                         var file = up.files[file_id];
@@ -53,8 +52,6 @@ var create_uploader = function(params, filesizes) {
                 $('#' + params['id']).val(path + "/" + file.name);
             },
             PostInit: function() {
-                document.getElementById('filelist').innerHTML = '';
-
                 document.getElementById('uploadfiles').onclick = function() {
                     uploader.start();
                     return false;
