@@ -1,6 +1,8 @@
 import json
 from os import path
 
+import simplejson
+
 from django.forms.widgets import Input
 from django.utils.safestring import mark_safe
 from django.template.loader import get_template
@@ -46,21 +48,21 @@ class PlUploadWidget(Input):
             {
                 'status': rf.status,
                 'filename': rf.get_filename(),
-                'percent': rf.get_percent()
+                'percent': rf.get_percent(),
+                'offset': rf.uploadsize
             }
             for rf in resumable_files
         ]
 
-        upload_rel_path = path.relpath(
-            settings.UPLOAD_ROOT,
-            settings.MEDIA_ROOT
-        )
+        file_progress = {
+            rf.get_filename(): rf.uploadsize
+            for rf in resumable_files
+        }
 
         self.widget_options.update({
             'STATIC_URL': settings.STATIC_URL,
             'id': final_attrs['id'],
             'url': reverse('plupload:upload_file'),
-            'path': upload_rel_path
         })
 
         options = {
@@ -70,6 +72,7 @@ class PlUploadWidget(Input):
             'final_attrs': flatatt(final_attrs),
             'json_params': mark_safe(json.dumps(self.widget_options)),
             'files': resumable_file_values,
+            'files_json': mark_safe(simplejson.dumps(file_progress))
         }
 
         return mark_safe(

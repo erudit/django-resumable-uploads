@@ -22,7 +22,26 @@
       </tr>
     </thead>
     <tbody id="filelist">
-      <tr id="filedrop" class="filedrop">
+      {% for file in files %}
+      <tr>
+        <td class="file-type">
+          <span class="icon-file"></span>
+        </td>
+        <td class="file-name">
+          {{ file.filename }}
+        </td>
+        <td class="file-status">
+          <span class="progress-bar" role="progressbar" aria-valuenow="{{ file.percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ file.percent }}%;">{{ file.percent }}%</span>
+        </td>
+      </tr>
+      {% endfor %}
+      {% comment %}
+      TODO: faire fonctionner le fallback
+      <tr>
+        <td colspan="5">{% trans "Votre navigateur ne supporte pas les technologies Flash, Silverlight ou HTML5." %}</td>
+      </tr>
+      {% endcomment %}
+      <tr id="drop_element" class="drop">
         <td colspan="5">
           <div class="drop-circle">
             <div class="drop-message">
@@ -49,9 +68,11 @@
 
 <script type="text/javascript">
 var json_params = JSON.parse('{{ json_params }}');
+var filesizes = JSON.parse('{{ files_json }}');
 $(function() {
   create_uploader(
-    json_params
+    json_params,
+    filesizes
   );
 });
 </script>
