@@ -10,6 +10,7 @@ var create_uploader = function(params, filesizes) {
         url : params['url'],
         max_file_size : params['max_file_size'],
         chunk_size : params['chunk_size'],
+        drop_element: params['drop_element'],
         unique_names : false,
         multipart_params: {
             "csrfmiddlewaretoken" : csrf_token,
