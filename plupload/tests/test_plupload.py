@@ -3,7 +3,6 @@ from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 from django.test import TestCase, RequestFactory
 from django.http import Http404, HttpResponseBadRequest
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 import mock
 
@@ -12,17 +11,33 @@ from plupload.views import (
     upload_error, get_upload_identifiers_or_404, upload_file
 )
 from plupload.forms import PlUploadFormField
-from plupload.fields import ResumableFileField
+
 from plupload.helpers import (
     path_for_namespace, namespace_exists, create_namespace, path_for_upload,
     upload_exists
 )
 
 
+class MyTestModelManager(models.Manager):
+
+    def get(self, **kwargs):
+        fake_model = MyTestModel(
+            **kwargs
+        )
+
+        fake_model.resumable_file = mock.MagicMock(
+            spec=models.ManyToManyField
+        )
+
+        return fake_model
+
+
 class MyTestModel(models.Model):
-    my_field = models.ManyToManyField(
-        'plupload.ResumableFile'
-    )
+
+    objects = MyTestModelManager()
+
+    def save(self):
+        return True
 
 
 class TestUploadViews(TestCase):
@@ -30,8 +45,7 @@ class TestUploadViews(TestCase):
 
     def setUp(self):
 
-        self.sample_model = MyTestModel()
-        self.sample_model.save()
+        # self.sample_model.save()
 
         self.factory = RequestFactory()
 
@@ -45,7 +59,7 @@ class TestUploadViews(TestCase):
             status=ResumableFileStatus.NEW
         ).save()
 
-    @mock.patch('django.apps.apps.get_model', lambda x, y: MyTestModel)
+    @mock.patch('django.apps.apps.get_model', lambda x, y: mock.MagicMock(spec=MyTestModel))
     def test_upload_file_raises_400_when_malformed(self):
         request = self.factory.post(
             '/plupload/',
@@ -60,6 +74,8 @@ class TestUploadViews(TestCase):
             "A request with no file should return an HttpBadRequest"
         )
 
+
+    @mock.patch('plupload.models.ResumableFile.save', lambda self: True)
     @mock.patch('django.apps.apps.get_model', lambda x, y: MyTestModel)
     def test_append_file(self):
         """ Test that chunks are appended to the file """
@@ -76,9 +92,6 @@ class TestUploadViews(TestCase):
 
         request.FILES['file'] = mock.MagicMock(spec=UploadedFile)
 
-        mocked_file = mock.Mock()
-        mocked_file.multiple_chunks = False
-
         with mock.patch("builtins.open", mock.MagicMock()) as mock_file:
             upload_file(request)
 
@@ -87,6 +100,7 @@ class TestUploadViews(TestCase):
             'ab'
         )
 
+    @mock.patch('plupload.models.ResumableFile.save', lambda self: True)
     @mock.patch('django.apps.apps.get_model', lambda x, y: MyTestModel)
     def test_create_file(self):
         """ Test that files are created when no chunk is sent """
@@ -139,7 +153,7 @@ class TestUploadViews(TestCase):
 
         request = self.factory.post(
             '/plupload/',
-            {'model': 'test.IssueSubmission', 'pk': 1, 'name': 'test.png'}
+            {'model': 'test.IssueSubmission', 'pk': 2, 'name': 'test.png'}
         )
 
         with mock.patch('os.makedirs', mock.MagicMock(spec=os.makedirs)):
@@ -149,7 +163,7 @@ class TestUploadViews(TestCase):
             resumable_file_count = ResumableFile.objects.filter(
                 path=path_for_upload(
                     "test.IssueSubmission",
-                    "1",
+                    "2",
                     "test.png",
                 ),
                 status=ResumableFileStatus.NEW
@@ -196,13 +210,11 @@ class TestUploadViews(TestCase):
         )
 
 
-class TestResumableFileField(TestCase):
+class TestHelpers(TestCase):
 
     def setUp(self):
-        class MyTestModel(models.Model):
-            my_field = ResumableFileField(upload_to='test_files')
 
-        self.test_model_class = MyTestModel
+        self.test_model_class = mock.MagicMock(spec=models.Model)
         self.factory = RequestFactory()
         settings.UPLOAD_ROOT = '/tmp'
 
@@ -212,7 +224,9 @@ class TestResumableFileField(TestCase):
         del(settings.UPLOAD_ROOT)
         self.assertRaises(
             AttributeError,
-            self.test_model_class().save
+            path_for_namespace,
+            'test.IssueSubmission',
+            '1',
         )
 
     def test_path_for_namespace(self):
@@ -251,42 +265,6 @@ class TestResumableFileField(TestCase):
                     upload_exists('test.IssueSubmission', '1', 'test.png'),
                     "The upload should exist when the namespace and file exists"
                 )
-
-    def test_directory_creation(self):
-        """ Test that the directory is created when the field is saved """
-        # Mock makedirs, we do not want to actually create the directory
-        import os
-        os.makedirs = mock.Mock()
-
-        my_test_model = self.test_model_class()
-
-        # Do not save this model to the database
-        my_test_model._do_update = mock.Mock()
-        my_test_model._do_insert = mock.Mock()
-
-        my_test_model.save()
-
-        # since the database is mocked, we manually give the model a pk
-        my_test_model.pk = 1
-
-        # pre_save is not called on creation
-        # so we need to update
-
-        my_test_model.save()
-        self.assertEquals(
-            os.makedirs.call_count,
-            1,
-            "os.makedirs should have been called"
-        )
-
-        self.assertEquals(
-            os.makedirs.call_args,
-            mock.call(
-                "{}/MyTestModel/my_field/1".format(
-                    settings.UPLOAD_ROOT
-                )
-            )
-        )
 
 
 class TestPluploadWidgetOptions(TestCase):
