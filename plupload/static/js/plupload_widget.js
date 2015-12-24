@@ -41,6 +41,13 @@ var create_uploader = function(params, filesizes) {
                 }
             },
 
+            BeforeUpload: function(up, file) {
+                var loaded = filesizes[file['name']];
+                if (loaded !== undefined) {
+                    file.loaded = loaded;
+                }
+            },
+
             FileUploaded: function(up, file, info) {
                 $('#' + params['id']).val(path + "/" + file.name);
             },
