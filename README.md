@@ -1,9 +1,9 @@
-[![Build Status](https://secure.travis-ci.org/vellonce/django-plupload.svg?branch=master)](https://secure.travis-ci.org/erudit/django-plupload?branch=master)
-[![Coverage](https://codecov.io/github/vellonce/django-plupload/coverage.svg?branch=master)](https://codecov.io/github/erudit/django-plupload?branch=master)
+[![Build Status](https://secure.travis-ci.org/erudit/django-resumable-uploads.svg?branch=master)](https://secure.travis-ci.org/erudit/django-resumable-uploads.svg?branch=master)
+[![Coverage](https://codecov.io/github/erudit/django-resumable-uploads/coverage.svg?branch=master)](https://codecov.io/github/erudit/django-resumable-uploads/coverage.svg?branch=master)
 
-# django-plupload
+# django-resumable-uploads
 
-django-plupload is a barebones multi file upload app for django. Uses plupload [http://www.plupload.com/], and jQuery.
+django-resumable-uploads is a barebones multi file upload app for django. Uses plupload [http://www.plupload.com/], and jQuery.
 You can use it in your applications with simple inclusion tag.
 
 ## Requirements
