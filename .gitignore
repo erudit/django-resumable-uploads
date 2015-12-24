@@ -4,6 +4,9 @@
 __pycache__/
 *.py[cod]
 
+# emacs
+*~
+
 # C extensions
 *.so
 

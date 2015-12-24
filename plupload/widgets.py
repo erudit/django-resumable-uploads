@@ -1,4 +1,7 @@
+import json
 from os import path
+
+import simplejson
 
 from django.forms.widgets import Input
 from django.utils.safestring import mark_safe
@@ -8,7 +11,7 @@ from django.template.context_processors import csrf
 from django.forms.utils import flatatt
 from django.core.urlresolvers import reverse
 
-import json
+from plupload.models import ResumableFile
 
 
 class PlUploadWidget(Input):
@@ -26,6 +29,10 @@ class PlUploadWidget(Input):
             attrs=attrs
         )
 
+    def set_model_reference(self, model_name, model_id):
+        self.widget_options['model_name'] = model_name
+        self.widget_options['model_id'] = model_id
+
     def render(self, name, value, attrs=None):
         final_attrs = self.build_attrs(attrs, type=self.input_type, name=name)
 
@@ -33,16 +40,29 @@ class PlUploadWidget(Input):
             "plupload_widget.html"
         )
 
-        upload_rel_path = path.relpath(
-            settings.UPLOAD_ROOT,
-            settings.MEDIA_ROOT
+        resumable_files = ResumableFile.objects.filter(
+            pk__in=value
         )
+
+        resumable_file_values = [
+            {
+                'status': rf.status,
+                'filename': rf.get_filename(),
+                'percent': rf.get_percent(),
+                'offset': rf.uploadsize
+            }
+            for rf in resumable_files
+        ]
+
+        file_progress = {
+            rf.get_filename(): rf.uploadsize
+            for rf in resumable_files
+        }
 
         self.widget_options.update({
             'STATIC_URL': settings.STATIC_URL,
             'id': final_attrs['id'],
             'url': reverse('plupload:upload_file'),
-            'path': upload_rel_path
         })
 
         options = {
@@ -50,7 +70,9 @@ class PlUploadWidget(Input):
             'id': final_attrs['id'],
             'csrf_token': csrf(name),
             'final_attrs': flatatt(final_attrs),
-            'json_params': mark_safe(json.dumps(self.widget_options))
+            'json_params': mark_safe(json.dumps(self.widget_options)),
+            'files': resumable_file_values,
+            'files_json': mark_safe(simplejson.dumps(file_progress))
         }
 
         return mark_safe(
