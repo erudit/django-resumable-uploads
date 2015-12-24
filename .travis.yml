@@ -4,5 +4,9 @@ install:
   - pip install tox codecov
 script:
   - tox
+test:
+  adapter: sqlite3
+  database: ":memory:"
+  timeout: 500
 after_success:
   - codecov

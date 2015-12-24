@@ -6,7 +6,7 @@ from django.conf import settings
 
 
 def is_test_db():
-    return 'memorydb' in settings.DATABASES.get(
+    return 'memory' in settings.DATABASES.get(
         'default', {}).get('NAME', '')
 
 
