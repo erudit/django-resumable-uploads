@@ -15,35 +15,6 @@ from plupload.helpers import (
 from plupload.models import ResumableFile, ResumableFileStatus
 
 
-def upload(request):
-    if request.method == "POST":
-        # Handle the upload here
-        pass
-    template_vars_template = RequestContext(request)
-    return render_to_response('upload_form.html',
-                              template_vars_template)
-
-
-def upload_custom(request):
-    if request.method == "POST":
-        # Handle the upload here
-        pass
-    # I'm using a dir with today date as name,
-    # so i send the constructed url for the latest file load
-    # and for the delete file url
-    todays_date = datetime.datetime.now().strftime("%Y/%m/%d/")
-
-    delete_file_url = "/del_file/"+todays_date
-    media_folder = "/static/media/csv_files/"+todays_date
-    all_files_url = "/get_all_files/"+todays_date
-    template_vars = dict(delete_file_url=delete_file_url,
-                         media_folder=media_folder,
-                         all_files_url=all_files_url)
-    template_vars_template = RequestContext(request, template_vars)
-    return render_to_response('custom_queue.html',
-                              template_vars_template)
-
-
 def get_upload_identifiers_or_404(request):
     """ Test that the upload identifiers are present in POST
 
@@ -133,36 +104,3 @@ def upload_error(request):
     resumable_file.status = ResumableFileStatus.ERROR
     resumable_file.save()
     return HttpResponse()
-
-
-def del_file(request, year, month, day):
-    if 'file' in request.GET:
-        dir_name = str.join("-", [year, month, day])
-        dir_path = settings.UPLOAD_ROOT
-        files = os.listdir(dir_path+dir_name)
-        dir_fd = os.open(dir_path+dir_name, os.O_RDONLY)
-        os.fchdir(dir_fd)
-
-        for _file in files:
-            if str(_file) == request.GET['file']:
-                os.remove(_file)
-        os.close(dir_fd)
-        result = 1
-    else:
-        result = 0
-    return HttpResponse(result)
-
-
-def get_all_files(request, year, month, day):
-    dir_name = str.join("-", [year, month, day])
-    dir_path = settings.UPLOAD_ROOT,
-    dir_fd = os.open(dir_path+dir_name, os.O_RDONLY)
-    os.fchdir(dir_fd)
-    filelist = os.listdir(os.getcwd())
-    filelist = filter(lambda x: not os.path.isdir(x), filelist)
-    files = []
-    for file_ in filelist:
-        if not file_.startswith("."):
-            files.append(dict(name=file_.split(".")[0], filename=file_))
-    return HttpResponse(content=json.dumps(files), status=200,
-                        content_type="application/json")
