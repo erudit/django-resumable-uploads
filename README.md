@@ -3,92 +3,73 @@
 
 # django-resumable-uploads
 
-django-resumable-uploads is a barebones multi file upload app for django. Uses plupload [http://www.plupload.com/], and jQuery.
-You can use it in your applications with simple inclusion tag.
+`django-resumable-uploads` is a multi-file resumable upload app. It uses [plupload](http://www.plupload.com/) and [jQuery](http://www.jquery.com/) in the backend.
 
 ## Requirements
-- Django 1.4+
-- Pillow if you need to upload images
 
-## Usage
+- Django 1.6+
 
-In the html template just load the 'plupload_script' tag passing the csrf token to generate the javascript needed,
-along with the url where you are going to process the file uploads.
-and include the 'pl_upload_form' to generate the 'div' where the upload queue will appear:
+## Getting started
 
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title></title>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        {% load plupload %}
-        {% plupload_script csrf_token "/plupload/" %}
-    </head>
-    <body>
-        <form method="post" action=".">
-        {% csrf_token %}
-        {% pl_upload_form %}
-            <p>
-                <button type="submit">Save</button>
-            </p>
-        </form>
-    </body>
-    </html>
+1. Add 'plupload' to your INSTALLED_APPS
 
-## Using the PlUploadFormField
+2. Register urls in your root urlconf urls.py adding string to your urlpatterns like so :
+    ```python
+    # The url where the upload form is located:
+    url(r'^$', 'plupload.views.upload'),
+    ```
+3. Specify the directory in which you would like to save the uploaded files. For example:
+    ```python
+    UPLOAD_ROOT = '/opt/project/media/uploads/
+    ```
 
-If you have a model that defines a `FileField`, for example:
+4. Link your model to the `ResumableFile` model:
 
-    class MyUpload(models.Model):
+    ```python
+    class MyModel(models.Model):
 
-        uploads = models.FileField(
-            blank=True, null=True
+        file_uploads = models.ManyToManyField(
+            'plupload.ResumableFile'
         )
+    ```
 
+5. For any model form in which you would like to enable resumable uploads, use the `PlUploadFormField`. All the values in the `options` dictionary will be passed to the PlUpload widget constructor:
 
-The `PlUploadFormField` can be used on a form like this:
-
-    class UploadForm(forms.ModelForm):
+    ```python
+    class FileUploadForm(models.ModelForm):
 
         class Meta:
-            model = MyUpload
+            model = MyModel
 
-        uploads = PlUploadFormField(
+        file_uploads = PlUploadFormField(
             path='uploads',
+            label=_("Fichier"),
             options={
-                "max_file_size": '5000mb'
+                "max_file_size": '15000mb',
+                "drop_element": 'drop_element',
+                "container": 'drop_element',
+                "browse_button": 'pickfiles'
             }
         )
+    ```
 
-All the values in the `options` dictionary will be passed to the PlUpload constructor.
-
-For a full list of options that can be passed to PlUpload, please refer to:
+For the full list of options that can be passed to PlUpload, please refer to:
 
 http://www.plupload.com/docs/Options
 
-### TODO
+## Roadmap
 
 * Make PlUploadFormField fully customizable
 
-## Installation
+## Running the tests
 
-1.Add 'plupload' to your INSTALLED_APPS
+* We use [`tox`](https://tox.readthedocs.org) as a test runner. To run the tests, install tox on your system or in a virtual environment and run it in the root of the project:
 
-2.Register urls in your root urlconf urls.py adding string to your urlpatterns like so :
+    ```bash
+    $ tox
+    ```
+## Contributing
 
-    #The url where the upload form is located:
-    url(r'^$', 'plupload.views.upload'),
+* All contributions are welcome. Please make sure the tests pass before submitting a pull request.
 
-3.Specify the directory in which you would like to save the uploaded files:
-
-    UPLOAD_ROOT = '/tmp/upload/
-
-
-4.Edit templates and styles to meet your needs. (Optional)
-    (for e.g. changing the form design and/or behavior)
-
-## Models
-
-It's barebones, so it doesn't need any model, so you can easily modify the plupload.py views functions to meet your needs :)
-
-That's all, I'm open for sugestions, or bug corrections if you find one.
+For any question, suggestion or additional help, feel free to contact `dcormier` on Freenode.
