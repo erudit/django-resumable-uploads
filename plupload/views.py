@@ -98,6 +98,7 @@ def handle_uploaded_file(f, chunk, resumable_file):
     resumable_file.uploadsize = _file.tell()
     resumable_file.save()
 
+
 def upload_error(request):
     identifiers = get_upload_identifiers_or_404(request)
     resumable_file = get_resumable_file_by_identifiers_or_404(*identifiers)
