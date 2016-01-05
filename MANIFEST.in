@@ -1,0 +1,4 @@
+include license.txt
+include README.md
+recursive-include plupload/templates *
+recursive-include plupload/static *
