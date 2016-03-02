@@ -33,10 +33,12 @@ var create_uploader = function(params, filesizes) {
                             "pk": String(params['model_id']),
                             "filesize": file.size,
                         }
-                        $.post(
-                            params['url'] + "set_file_info",
-                            post_values
-                        );
+                        $.ajax({
+                          type: 'POST',
+                          url: params['url'] + "set_file_info",
+                          data: post_values,
+                          async: false
+                        });
                     }
                 }
             },

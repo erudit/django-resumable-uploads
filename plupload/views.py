@@ -1,6 +1,4 @@
-import os
-import datetime
-import json
+from decimal import Decimal
 
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.conf import settings
@@ -40,13 +38,12 @@ def get_upload_identifiers_or_404(request):
 def set_file_info(request):
 
     model_name, model_pk, filename = get_upload_identifiers_or_404(request)
-
     if not namespace_exists(model_name, model_pk):
         create_namespace(model_name, model_pk)
 
     resumable_file = get_or_create_resumable_file(model_name, model_pk, filename)
 
-    resumable_file.filesize = int(request.POST['filesize'])
+    resumable_file.filesize = Decimal(request.POST.get('filesize'))
     resumable_file.save()
     return JsonResponse({
         'id': resumable_file.id,
@@ -54,7 +51,6 @@ def set_file_info(request):
 
 
 def upload_file(request):
-
     model_name, model_pk, filename = get_upload_identifiers_or_404(request)
 
     if not namespace_exists(model_name, model_pk):
