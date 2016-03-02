@@ -2,6 +2,19 @@ var create_uploader = function(params, filesizes) {
     var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
     var path = params['path'];
 
+    function addIdToUploadField(new_id) {
+        var currentVal = $('#' + params['id']).val();
+        var newVal = new_id;
+        if (currentVal) {
+            var ids = currentVal.split(',');
+            ids.push(newVal);
+            var uids = [];
+            $.each(ids, function(i, el){if($.inArray(String(el), uids) === -1) uids.push(String(el));});
+            newVal = uids.join(',');
+        }
+        $('#' + params['id']).val(newVal);
+    }
+
     var uploader = new plupload.Uploader({
         browse_button: 'pickfiles',
         // TODO: Customize runtimes
@@ -38,6 +51,8 @@ var create_uploader = function(params, filesizes) {
                           url: params['url'] + "set_file_info",
                           data: post_values,
                           async: false
+                        }).done(function(response){
+                            addIdToUploadField(response.id);
                         });
                     }
                 }
@@ -52,12 +67,7 @@ var create_uploader = function(params, filesizes) {
 
             FileUploaded: function(up, file, info) {
                 var json = JSON.parse(info.response);
-                var currentVal = $('#' + params['id']).val();
-                var newVal = json.id;
-                if (currentVal) {
-                    newVal = currentVal + ',' + newVal;
-                }
-                $('#' + params['id']).val(newVal);
+                addIdToUploadField(json.id);
             },
             PostInit: function() {
                 document.getElementById('uploadfiles').onclick = function() {
