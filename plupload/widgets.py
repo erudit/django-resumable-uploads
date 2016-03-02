@@ -42,9 +42,9 @@ class PlUploadWidget(Input):
         )
 
         fids = []
-        if isinstance(value, six.string_types):
+        if value and isinstance(value, six.string_types):
             fids = value.split(',')
-        elif isinstance(value, list):
+        elif value and isinstance(value, list):
             fids = value
         else:
             fids = []
