@@ -50,7 +50,6 @@ def add_to_model_m2m(resumable_file, model, pk):
         if isinstance(field, ManyToManyField):
             # check if the m2m accepts resumable files
             bound_field = getattr(object, field.name)
-            print(field)
             if bound_field.model == ResumableFile:
                 bound_field.add(resumable_file)
                 object.save()
