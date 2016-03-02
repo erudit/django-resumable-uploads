@@ -59,6 +59,13 @@ var create_uploader = function(params, filesizes) {
             },
 
             BeforeUpload: function(up, file) {
+                var filesAddedCount = $('#' + params['id']).data('files-added');
+                filesAddedCount = (filesAddedCount) ? parseInt(filesAddedCount) - 1 : 0;
+                var filesUploadingCount = $('#' + params['id']).data('files-uploading');
+                filesUploadingCount = (filesUploadingCount) ? parseInt(filesUploadingCount) + 1 : 1;
+                $('#' + params['id']).data('files-added', filesAddedCount);
+                $('#' + params['id']).data('files-uploading', filesUploadingCount);
+
                 var loaded = filesizes[file['name']];
                 if (loaded !== undefined) {
                     file.loaded = loaded;
@@ -68,6 +75,10 @@ var create_uploader = function(params, filesizes) {
             FileUploaded: function(up, file, info) {
                 var json = JSON.parse(info.response);
                 addIdToUploadField(json.id);
+
+                var filesUploadingCount = $('#' + params['id']).data('files-uploading');
+                filesUploadingCount = (filesUploadingCount) ? parseInt(filesUploadingCount) - 1 : 0;
+                $('#' + params['id']).data('files-uploading', filesUploadingCount);
             },
             PostInit: function() {
                 document.getElementById('uploadfiles').onclick = function() {
@@ -76,6 +87,13 @@ var create_uploader = function(params, filesizes) {
                 };
             },
             FilesAdded: function(up, files) {
+                var filesAddedCount = $('#' + params['id']).data('files-added');
+                if (filesAddedCount) {
+                    $('#' + params['id']).data('files-added', filesAddedCount + files.length);
+                } else {
+                    $('#' + params['id']).data('files-added', files.length);
+                }
+
                 plupload.each(files, function(file) {
                     var fileStatus = '<span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</span>';
                     var fileDelete = '<a href="#" class="icon-upload icon-delete"></a>';
