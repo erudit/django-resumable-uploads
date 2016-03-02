@@ -4,6 +4,7 @@ from os import path
 import simplejson
 
 from django.forms.widgets import Input
+from django.utils import six
 from django.utils.safestring import mark_safe
 from django.template.loader import get_template
 from django.conf import settings
@@ -40,9 +41,16 @@ class PlUploadWidget(Input):
             "plupload_widget.html"
         )
 
-        resumable_files = ResumableFile.objects.filter(
-            pk__in=value
-        )
+        fids = []
+        if isinstance(value, six.string_types):
+            fids = value.split(',')
+        elif isinstance(value, list):
+            fids = value
+        else:
+            fids = []
+        resumable_files = ResumableFile.objects.filter(pk__in=fids) if fids else []
+
+        final_attrs['value'] = ','.join(map(six.text_type, fids))
 
         resumable_file_values = [
             {

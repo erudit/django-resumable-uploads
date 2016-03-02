@@ -49,7 +49,13 @@ var create_uploader = function(params, filesizes) {
             },
 
             FileUploaded: function(up, file, info) {
-                $('#' + params['id']).val(path + "/" + file.name);
+                var json = JSON.parse(info.response);
+                var currentVal = $('#' + params['id']).val();
+                var newVal = json.id;
+                if (currentVal) {
+                    newVal = currentVal + ',' + newVal;
+                }
+                $('#' + params['id']).val(newVal);
             },
             PostInit: function() {
                 document.getElementById('uploadfiles').onclick = function() {

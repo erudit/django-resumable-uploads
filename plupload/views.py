@@ -2,7 +2,7 @@ import os
 import datetime
 import json
 
-from django.http import HttpResponse, Http404, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.conf import settings
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -48,7 +48,9 @@ def set_file_info(request):
 
     resumable_file.filesize = int(request.POST['filesize'])
     resumable_file.save()
-    return HttpResponse()
+    return JsonResponse({
+        'id': resumable_file.id,
+    })
 
 
 def upload_file(request):
@@ -70,7 +72,9 @@ def upload_file(request):
                 resumable_file,
             )
         # response only to notify plUpload that the upload was successful
-        return HttpResponse()
+        return JsonResponse({
+            'id': resumable_file.id,
+        })
     else:
         return HttpResponseBadRequest
 
