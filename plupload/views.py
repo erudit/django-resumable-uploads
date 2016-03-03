@@ -1,10 +1,9 @@
-import os
 from decimal import Decimal
+import os
+import shutil
 
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
-from django.conf import settings
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.views.generic import DeleteView
 
 from plupload.helpers import (
     namespace_exists, create_namespace, path_for_upload,
@@ -123,3 +122,20 @@ def upload_error(request):
     resumable_file.status = ResumableFileStatus.ERROR
     resumable_file.save()
     return HttpResponse()
+
+
+class ResumableFileDeleteView(DeleteView):
+    model = ResumableFile
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        # Remove file and chunk files
+        fdir = os.path.dirname(self.object.path)
+        for f in os.listdir(fdir):
+            fpath = os.path.join(fdir, f)
+            if fpath.startswith(self.object.path):
+                os.remove(os.path.join(fdir, f))
+
+        self.object.delete()
+        return JsonResponse({'id': self.kwargs['pk']})

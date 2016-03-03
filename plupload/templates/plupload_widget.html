@@ -23,7 +23,7 @@
     </thead>
     <tbody id="filelist">
       {% for file in files %}
-      <tr>
+      <tr data-resumable-file-id="{{ file.id }}" data-resumable-file-name="{{ file.filename }}">
         <td class="file-type">
           <span class="icon-file"></span>
         </td>
@@ -36,6 +36,7 @@
         <td class="file-status">
           <span class="progress-bar" role="progressbar" aria-valuenow="{{ file.percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ file.percent }}%;">{{ file.percent }}%</span>
         </td>
+        <td class="file-delete"><a href="#" class="delete-file icon-upload icon-delete"></a></td>
       </tr>
       {% endfor %}
       {% comment %}

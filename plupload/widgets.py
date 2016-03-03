@@ -54,6 +54,7 @@ class PlUploadWidget(Input):
 
         resumable_file_values = [
             {
+                'id': rf.id,
                 'status': rf.status,
                 'filename': rf.get_filename(),
                 'filesize': rf.get_filesize_display(),

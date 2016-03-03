@@ -95,6 +95,7 @@ var create_uploader = function(params, filesizes) {
 
                 var json = JSON.parse(info.response);
                 addIdToUploadField(json.id);
+                $('#' + file.id).data('resumable-file-id', json.id);
 
                 // Update input' data attributes
                 var filesUploadingCount = $('#' + params['id']).data('files-uploading');
@@ -117,11 +118,11 @@ var create_uploader = function(params, filesizes) {
 
                 plupload.each(files, function(file) {
                     var fileStatus = '<span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</span>';
-                    var fileDelete = '<a href="#" class="icon-upload icon-delete"></a>';
+                    var fileDelete = '<a href="#" class="delete-file icon-upload icon-delete"></a>';
                     var fileName = file.name;
                     var fileType = fileName.substr(fileName.lastIndexOf('.') + 1).toLowerCase();
                     document.getElementById('filelist').innerHTML +=
-                    '<tr id="' +
+                    '<tr data-resumable-file-name="' + fileName + '" id="' +
                     file.id +
                     '"><td class="file-type"><span class="icon-file icon-' +
                     fileType +
@@ -180,4 +181,41 @@ var create_uploader = function(params, filesizes) {
         }
         retry();
     }, false);
+
+    $(document).on('click', 'a.delete-file', function(ev){
+        ev.preventDefault();
+
+        var $fileRow = $(this).parents('tr');
+        var fileId = $fileRow.data('resumable-file-id');
+        var fileAttrId = $fileRow.attr('id');
+        var fileName = $fileRow.data('resumable-file-name');
+
+        if (!$fileRow.length) return;
+
+        r = confirm(gettext("Êtes-vous sûr ?"));
+        if (r !== true) { return; }
+
+        if (fileId) {
+            post_values = {
+                'csrfmiddlewaretoken': csrf_token,
+                "pk": fileId,
+            }
+            $.ajax({
+              type: 'POST',
+              url: params['url'] + "resumable-file/" + fileId + "/delete/",
+              data: post_values,
+              async: false
+            }).done(function(response){
+                if (fileAttrId) uploader.removeFile(fileAttrId);
+                $fileRow.remove();
+                filesizes[fileName] = undefined;
+            });
+        } else {
+            uploader.removeFile(fileAttrId);
+            $fileRow.remove();
+            var filesAddedCount = $('#' + params['id']).data('files-added');
+            filesAddedCount = (filesAddedCount) ? parseInt(filesAddedCount) - 1 : 0;
+            $('#' + params['id']).data('files-added', filesAddedCount);
+        }
+    });
 };
