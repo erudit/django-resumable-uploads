@@ -1,6 +1,7 @@
 import os
 
 from django.db import models
+import humanfriendly
 
 
 class HasResumableFilesMixin():
@@ -41,6 +42,10 @@ class ResumableFile(models.Model):
 
     def get_filename(self):
         return self.path.replace(os.path.dirname(self.path) + "/", "")
+
+    def get_filesize_display(self):
+        if self.filesize:
+            return humanfriendly.format_size(self.filesize)
 
     def get_percent(self):
         return int(self.uploadsize / self.filesize * 100) if\

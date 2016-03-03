@@ -30,6 +30,9 @@
         <td class="file-name">
           {{ file.filename }}
         </td>
+        <td class="file-size">
+          {{ file.filesize }}
+        </td>
         <td class="file-status">
           <span class="progress-bar" role="progressbar" aria-valuenow="{{ file.percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ file.percent }}%;">{{ file.percent }}%</span>
         </td>

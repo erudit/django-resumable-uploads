@@ -56,8 +56,9 @@ class PlUploadWidget(Input):
             {
                 'status': rf.status,
                 'filename': rf.get_filename(),
+                'filesize': rf.get_filesize_display(),
                 'percent': rf.get_percent(),
-                'offset': rf.uploadsize
+                'offset': rf.uploadsize,
             }
             for rf in resumable_files
         ]
