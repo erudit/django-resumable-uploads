@@ -15,12 +15,19 @@ var create_uploader = function(params, filesizes) {
         $('#' + params['id']).val(newVal);
     }
 
+    // This object is used to keep track of the data that is transferred
+    var upload = {
+        file: null,
+        offset: 0
+    };
+
     var uploader = new plupload.Uploader({
         browse_button: 'pickfiles',
         // TODO: Customize runtimes
         runtimes : 'html5,gears,silverlight',
 
         url : params['url'],
+        max_retries : 5,
         max_file_size : params['max_file_size'],
         chunk_size : params['chunk_size'],
         drop_element: params['drop_element'],
@@ -59,6 +66,11 @@ var create_uploader = function(params, filesizes) {
             },
 
             BeforeUpload: function(up, file) {
+                // Update upload state
+                upload.file = file;
+                upload.offset = 0;
+
+                // Update input' data attributes
                 var filesAddedCount = $('#' + params['id']).data('files-added');
                 filesAddedCount = (filesAddedCount) ? parseInt(filesAddedCount) - 1 : 0;
                 var filesUploadingCount = $('#' + params['id']).data('files-uploading');
@@ -72,10 +84,19 @@ var create_uploader = function(params, filesizes) {
                 }
             },
 
+            ChunkUploaded: function (up, file, info) {
+                // Update upload state
+                upload.offset = info.offset;
+            },
+
             FileUploaded: function(up, file, info) {
+                // Update upload state
+                upload.file = null;
+
                 var json = JSON.parse(info.response);
                 addIdToUploadField(json.id);
 
+                // Update input' data attributes
                 var filesUploadingCount = $('#' + params['id']).data('files-uploading');
                 filesUploadingCount = (filesUploadingCount) ? parseInt(filesUploadingCount) - 1 : 0;
                 $('#' + params['id']).data('files-uploading', filesUploadingCount);
@@ -123,6 +144,13 @@ var create_uploader = function(params, filesizes) {
             },
 
             Error: function(up, err) {
+                if(err.code !== plupload.HTTP_ERROR) {
+                    return true;
+                }
+                uploader.stop();
+                console.warn('[plupload] stopped (HTTP Error)');
+                window.setTimeout(retry, 5000);
+
                 document.getElementById('console').appendChild(document.createTextNode("\nError #" + err.code + ": " + err.message));
             }
 
@@ -130,4 +158,26 @@ var create_uploader = function(params, filesizes) {
     });
 
     uploader.init();
+
+    var retry = function () {
+        console.log('[plupload] restarted (retry)');
+        upload.file.loaded = upload.offset;
+        upload.file.status = plupload.UPLOADING;
+        // the following is similar to uploader.start()
+        // but starts a specific file at a specific position
+        uploader.state = plupload.STARTED;
+        uploader.trigger('UploadFile', upload.file);
+    };
+
+    window.addEventListener('offline', function () {
+        console.log('[plupload] stopped (offline)');
+        uploader.stop();
+    }, false);
+
+    window.addEventListener('online', function() {
+        if(upload.file === null) {
+            return false;
+        }
+        retry();
+    }, false);
 };

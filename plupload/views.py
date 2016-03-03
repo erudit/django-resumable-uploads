@@ -1,3 +1,4 @@
+import os
 from decimal import Decimal
 
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
@@ -64,7 +65,8 @@ def upload_file(request):
         for _file in request.FILES:
             handle_uploaded_file(
                 request.FILES[_file],
-                request.POST.get('chunk', 0),
+                int(request.POST.get('chunk', 0)),
+                int(request.POST.get('chunks')),
                 resumable_file,
             )
         # response only to notify plUpload that the upload was successful
@@ -75,28 +77,44 @@ def upload_file(request):
         return HttpResponseBadRequest
 
 
-def handle_uploaded_file(f, chunk, resumable_file):
+def handle_uploaded_file(f, chunk, chunks_count, resumable_file):
     """
     Here you can do whatever you like with your files, like resize them if they
     are images
     :param f: the file
     :param chunk: number of chunk to save
     """
-
-    if int(chunk) > 0:
-        # opens for append
-        _file = open(resumable_file.path, 'ab')
-    else:
-        # erases content
-        _file = open(resumable_file.path, 'wb')
+    chunk_filepath = lambda c: '{path}.chunk{chunk}'.format(
+        path=resumable_file.path, chunk=c)
+    chunk_file = open(chunk_filepath(chunk), 'wb')
 
     if f.multiple_chunks:
-        for chunk in f.chunks():
-            _file.write(chunk)
+        for chk in f.chunks():
+            chunk_file.write(chk)
     else:
-        _file.write(f.read())
-    resumable_file.uploadsize = _file.tell()
+        chunk_file.write(f.read())
+
+    # resumable_file.uploadsize = _file.tell()
+    resumable_file.uploadsize = chunk_file.tell() * (chunk + 1)
     resumable_file.save()
+    chunk_file.close()
+
+    if not (chunk == (chunks_count - 1)):
+        return
+
+    # Writes the final file
+    final_file = open(resumable_file.path, 'wb')
+    for ichunk in range(chunks_count):
+        with open(chunk_filepath(ichunk), 'rb') as fchunk:
+            final_file.write(fchunk.read())
+
+    resumable_file.uploadsize = final_file.tell()
+    resumable_file.save()
+    final_file.close()
+
+    # Deletes the temporary "chunk" files
+    for ichunk in range(chunks_count):
+        os.remove(chunk_filepath(ichunk))
 
 
 def upload_error(request):
