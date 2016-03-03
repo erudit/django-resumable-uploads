@@ -77,6 +77,7 @@ class TestUploadViews(TestCase):
 
     @mock.patch('plupload.models.ResumableFile.save', lambda self: True)
     @mock.patch('django.apps.apps.get_model', lambda x, y: MyTestModel)
+    @mock.patch('plupload.views.os.remove', lambda self: True)
     def test_append_file(self):
         """ Test that chunks are appended to the file """
 
@@ -86,7 +87,8 @@ class TestUploadViews(TestCase):
                 'model': 'test.IssueSubmission',
                 'pk': 1,
                 'name': 'test.png',
-                "chunk": 1
+                "chunk": 0,
+                "chunks": 1,
             }
         )
 
@@ -95,13 +97,18 @@ class TestUploadViews(TestCase):
         with mock.patch("builtins.open", mock.MagicMock()) as mock_file:
             upload_file(request)
 
-        mock_file.assert_called_once_with(
+        mock_file.assert_called_with(
+            path_for_upload('test.IssueSubmission', '1', 'test.png.chunk0'),
+            'rb'
+        )
+        mock_file.assert_any_call(
             path_for_upload('test.IssueSubmission', '1', 'test.png'),
-            'ab'
+            'wb'
         )
 
     @mock.patch('plupload.models.ResumableFile.save', lambda self: True)
     @mock.patch('django.apps.apps.get_model', lambda x, y: MyTestModel)
+    @mock.patch('plupload.views.os.remove', lambda self: True)
     def test_create_file(self):
         """ Test that files are created when no chunk is sent """
         request = self.factory.post(
@@ -110,7 +117,8 @@ class TestUploadViews(TestCase):
                 'model': 'test.IssueSubmission',
                 'pk': 1,
                 'name': 'test.png',
-                "chunk": 0
+                "chunk": 0,
+                "chunks": 1,
             }
         )
 
@@ -119,7 +127,11 @@ class TestUploadViews(TestCase):
         with mock.patch("builtins.open", mock.MagicMock()) as mock_file:
             upload_file(request)
 
-        mock_file.assert_called_once_with(
+        mock_file.assert_called_with(
+            path_for_upload('test.IssueSubmission', '1', 'test.png.chunk0'),
+            'rb'
+        )
+        mock_file.assert_any_call(
             path_for_upload('test.IssueSubmission', '1', 'test.png'),
             'wb'
         )
