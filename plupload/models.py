@@ -50,3 +50,7 @@ class ResumableFile(models.Model):
     def get_percent(self):
         return int(self.uploadsize / self.filesize * 100) if\
             self.uploadsize and self.filesize else 0
+
+    @property
+    def is_complete(self):
+        return int(self.get_percent()) == 100
