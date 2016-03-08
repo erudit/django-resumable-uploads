@@ -20,8 +20,11 @@ class PlUploadWidget(Input):
     needs_multipart_form = True
     input_type = 'text'
 
-    def __init__(self, attrs=None, widget_options=None):
+    def __init__(
+            self, attrs=None, widget_options=None,
+            template_name='plupload/plupload_widget.html'):
         self.widget_options = widget_options
+        self.template_name = template_name
 
         if widget_options is None:
             self.widget_options = {}
@@ -37,9 +40,7 @@ class PlUploadWidget(Input):
     def render(self, name, value, attrs=None):
         final_attrs = self.build_attrs(attrs, type=self.input_type, name=name)
 
-        template = get_template(
-            "plupload_widget.html"
-        )
+        template = get_template(self.template_name)
 
         fids = []
         if value and isinstance(value, six.string_types):
