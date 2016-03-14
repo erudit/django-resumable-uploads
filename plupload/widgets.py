@@ -20,6 +20,16 @@ class PlUploadWidget(Input):
     needs_multipart_form = True
     input_type = 'text'
 
+    class Media:
+        js = (
+            'js/moxie.js',
+            'js/plupload.full.min.js',
+            'js/plupload_widget.js',
+        )
+        css = {
+            'all': ('css/plupload.css', )
+        }
+
     def __init__(
             self, attrs=None, widget_options=None,
             template_name='plupload/plupload_widget.html'):

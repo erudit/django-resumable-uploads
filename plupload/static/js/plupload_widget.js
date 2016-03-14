@@ -219,3 +219,14 @@ var create_uploader = function(params, filesizes) {
         }
     });
 };
+
+$(document).ready(function(){
+    $('.upload-container').each(function(){
+      var json_params = $(this).data('json-params');
+      var filesizes = $(this).data('filesizes');
+      create_uploader(
+        json_params,
+        filesizes
+      );
+    });
+});
