@@ -45,10 +45,13 @@ class ResumableFile(models.Model):
 
         # Removes the files associated with the ResumableFile instance from the disk.
         fdir = os.path.dirname(self.path)
-        for f in os.listdir(fdir):
-            fpath = os.path.join(fdir, f)
-            if fpath.startswith(self.path):
-                os.remove(os.path.join(fdir, f))
+        try:
+            for f in os.listdir(fdir):
+                fpath = os.path.join(fdir, f)
+                if fpath.startswith(self.path):
+                    os.remove(os.path.join(fdir, f))
+        except FileNotFoundError:  # noqa
+            pass
 
         return ret
 
