@@ -1,12 +1,11 @@
 from decimal import Decimal
 import os
-import shutil
 
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.views.generic import DeleteView
 
 from plupload.helpers import (
-    namespace_exists, create_namespace, path_for_upload,
+    namespace_exists, create_namespace,
     get_resumable_file_by_identifiers_or_404, get_or_create_resumable_file
 )
 
@@ -129,13 +128,5 @@ class ResumableFileDeleteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-
-        # Remove file and chunk files
-        fdir = os.path.dirname(self.object.path)
-        for f in os.listdir(fdir):
-            fpath = os.path.join(fdir, f)
-            if fpath.startswith(self.object.path):
-                os.remove(os.path.join(fdir, f))
-
         self.object.delete()
         return JsonResponse({'id': self.kwargs['pk']})
