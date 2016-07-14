@@ -192,7 +192,7 @@ var create_uploader = function(params, filesizes) {
 
         if (!$fileRow.length) return;
 
-        r = confirm(gettext("Êtes-vous sûr ?"));
+        r = confirm(gettext("Vous allez supprimer le fichier " + fileName + ", cliquez sur « Annuler » pour le conserver ou sur « Ok » pour poursuivre la suppression."));
         if (r !== true) { return; }
 
         if (fileId) {
