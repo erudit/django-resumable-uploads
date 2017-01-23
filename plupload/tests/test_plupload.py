@@ -40,6 +40,15 @@ class MyTestModel(models.Model):
     def save(self):
         return True
 
+class TestModel(TestCase):
+
+    def test_can_sanitize_filename(self):
+        resumable_file = ResumableFileFactory(path="test file ,.png")
+        self.assertEqual(
+            resumable_file.get_filename(sanitize=True),
+            "test_file__.png"
+        )
+
 
 class TestUploadViews(TestCase):
     """ Test the upload cases """
