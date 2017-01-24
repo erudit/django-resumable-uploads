@@ -84,7 +84,7 @@ class PlUploadWidget(Input):
         self.widget_options.update({
             'STATIC_URL': settings.STATIC_URL,
             'id': final_attrs['id'],
-            'url': reverse('plupload:upload_file'),
+            'url': reverse('resumable_uploads:upload_file'),
         })
 
         options = {
