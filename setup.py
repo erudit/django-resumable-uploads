@@ -1,17 +1,17 @@
 # coding: utf-8
-__author__ = 'Héctor Vela'
+__author__ = 'Consortium Érudit'
 
 from setuptools import setup, find_packages
 
 setup(
-    name="django-plupload",
-    version="0.6.0",
+    name="django-resumable-uploads",
+    version="1.0.0"
     description="""
-django-plupload is a barebones multi file upload app for django.
+django-resumable-uploads is a multi file upload app for django.
 Uses plupload""",
     long_description=open('README.md').read(),
-    author="Héctor Vela",
-    author_email="vellonce@gmail.com",
+    author="Consortium Erudit",
+    author_email="tech@erudit.org",
     url="",
     license="GPLv2",
     packages=find_packages(),

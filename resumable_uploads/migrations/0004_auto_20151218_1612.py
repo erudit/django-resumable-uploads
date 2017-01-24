@@ -13,7 +13,7 @@ def is_test_db():
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('plupload', '0003_auto_20151217_1519'),
+        ('resumable_uploads', '0003_auto_20151217_1519'),
     ]
 
     if is_test_db():
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                     ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)
                     ),
                     ('my_field', models.ManyToManyField(
-                        to='plupload.ResumableFile'
+                        to='resumable_uploads.ResumableFile'
                     ))
                 ],
             )

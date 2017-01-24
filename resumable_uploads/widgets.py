@@ -12,7 +12,7 @@ from django.template.context_processors import csrf
 from django.forms.utils import flatatt
 from django.core.urlresolvers import reverse
 
-from plupload.models import ResumableFile
+from resumable_uploads.models import ResumableFile
 
 
 class PlUploadWidget(Input):

@@ -6,7 +6,7 @@ from django.apps import apps
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
-from plupload.models import ResumableFile, ResumableFileStatus
+from resumable_uploads.models import ResumableFile, ResumableFileStatus
 
 
 def get_or_create_resumable_file(model, pk, filename):

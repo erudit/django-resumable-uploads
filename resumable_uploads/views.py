@@ -4,12 +4,12 @@ import os
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseBadRequest
 from django.views.generic import DeleteView
 
-from plupload.helpers import (
+from resumable_uploads.helpers import (
     namespace_exists, create_namespace,
     get_resumable_file_by_identifiers_or_404, get_or_create_resumable_file
 )
 
-from plupload.models import ResumableFile, ResumableFileStatus
+from resumable_uploads.models import ResumableFile, ResumableFileStatus
 
 
 def get_upload_identifiers_or_404(request):

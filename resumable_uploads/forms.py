@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.forms.fields import FilePathField
 
-from plupload.widgets import PlUploadWidget
+from resumable_uploads.widgets import PlUploadWidget
 
 
 class PlUploadFormField(FilePathField):
