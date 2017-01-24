@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="django-plupload",
-    version="0.5",
+    version="0.6.0",
     description="""
 django-plupload is a barebones multi file upload app for django.
 Uses plupload""",
