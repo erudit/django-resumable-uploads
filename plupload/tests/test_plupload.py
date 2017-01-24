@@ -6,6 +6,7 @@ from django.http import Http404, HttpResponseBadRequest
 
 import mock
 
+from plupload.factories import ResumableFileFactory
 from plupload.models import ResumableFile, ResumableFileStatus
 from plupload.views import (
     upload_error, get_upload_identifiers_or_404, upload_file
@@ -39,6 +40,15 @@ class MyTestModel(models.Model):
     def save(self):
         return True
 
+class TestModel(TestCase):
+
+    def test_can_sanitize_filename(self):
+        resumable_file = ResumableFileFactory(path="test file ,.png")
+        self.assertEqual(
+            resumable_file.get_filename(sanitize=True),
+            "test_file__.png"
+        )
+
 
 class TestUploadViews(TestCase):
     """ Test the upload cases """
@@ -49,7 +59,7 @@ class TestUploadViews(TestCase):
 
         self.factory = RequestFactory()
 
-        self.sample_file = ResumableFile(
+        self.sample_file = ResumableFileFactory(
             pk=2,
             path=path_for_upload(
                 "IssueSubmission",

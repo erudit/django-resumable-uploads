@@ -1,3 +1,4 @@
+import re
 import os
 
 from django.db import models
@@ -55,8 +56,16 @@ class ResumableFile(models.Model):
 
         return ret
 
-    def get_filename(self):
-        return self.path.replace(os.path.dirname(self.path) + "/", "")
+    def get_filename(self, sanitize=False):
+        """ Return the filename
+
+            :param sanitize: replace all characters that prevent the filename to be
+            used in Content-Disposition
+        """
+        filename = self.path.replace(os.path.dirname(self.path) + "/", "")
+        if sanitize:
+            return re.sub('[ |,]', '_', filename)
+        return filename
 
     def get_filesize_display(self):
         if self.filesize:
