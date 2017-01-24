@@ -6,6 +6,7 @@ from django.http import Http404, HttpResponseBadRequest
 
 import mock
 
+from plupload.factories import ResumableFileFactory
 from plupload.models import ResumableFile, ResumableFileStatus
 from plupload.views import (
     upload_error, get_upload_identifiers_or_404, upload_file
@@ -49,7 +50,7 @@ class TestUploadViews(TestCase):
 
         self.factory = RequestFactory()
 
-        self.sample_file = ResumableFile(
+        self.sample_file = ResumableFileFactory(
             pk=2,
             path=path_for_upload(
                 "IssueSubmission",
