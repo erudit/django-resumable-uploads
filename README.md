@@ -11,12 +11,12 @@
 
 ## Getting started
 
-1. Add 'plupload' to your INSTALLED_APPS
+1. Add 'resumable_uploads' to your INSTALLED_APPS
 
 2. Register urls in your root urlconf urls.py adding string to your urlpatterns like so :
     ```python
     # The url where the upload form is located:
-    url(r'^$', 'plupload.views.upload'),
+    url(r'^$', 'resumable_uploads.views.upload'),
     ```
 3. Specify the directory in which you would like to save the uploaded files. For example:
     ```python
@@ -29,7 +29,7 @@
     class MyModel(models.Model):
 
         file_uploads = models.ManyToManyField(
-            'plupload.ResumableFile'
+            'resumable_uploads.ResumableFile'
         )
     ```
 
@@ -68,6 +68,13 @@ http://www.plupload.com/docs/Options
     ```bash
     $ tox
     ```
+
+## Authors
+
+* Consortium Érudit and [contributors](https://github.com/erudit/erudit-core/graphs/contributors)
+
+Based on [django-plupload](https://github.com/vellonce/django-plupload) by @vellonce
+
 ## Contributing
 
 * All contributions are welcome. Please make sure the tests pass before submitting a pull request.

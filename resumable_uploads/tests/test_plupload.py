@@ -6,14 +6,14 @@ from django.http import Http404, HttpResponseBadRequest
 
 import mock
 
-from plupload.factories import ResumableFileFactory
-from plupload.models import ResumableFile, ResumableFileStatus
-from plupload.views import (
+from resumable_uploads.factories import ResumableFileFactory
+from resumable_uploads.models import ResumableFile, ResumableFileStatus
+from resumable_uploads.views import (
     upload_error, get_upload_identifiers_or_404, upload_file
 )
-from plupload.forms import PlUploadFormField
+from resumable_uploads.forms import PlUploadFormField
 
-from plupload.helpers import (
+from resumable_uploads.helpers import (
     path_for_namespace, namespace_exists, create_namespace, path_for_upload,
     upload_exists
 )
@@ -72,7 +72,7 @@ class TestUploadViews(TestCase):
     @mock.patch('django.apps.apps.get_model', lambda x, y: mock.MagicMock(spec=MyTestModel))
     def test_upload_file_raises_400_when_malformed(self):
         request = self.factory.post(
-            '/plupload/',
+            '/resumable_uploads/',
             {'model': 'test.IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
@@ -85,14 +85,14 @@ class TestUploadViews(TestCase):
         )
 
 
-    @mock.patch('plupload.models.ResumableFile.save', lambda self: True)
+    @mock.patch('resumable_uploads.models.ResumableFile.save', lambda self: True)
     @mock.patch('django.apps.apps.get_model', lambda x, y: MyTestModel)
-    @mock.patch('plupload.views.os.remove', lambda self: True)
+    @mock.patch('resumable_uploads.views.os.remove', lambda self: True)
     def test_append_file(self):
         """ Test that chunks are appended to the file """
 
         request = self.factory.post(
-            '/plupload/',
+            '/resumable_uploads/',
             {
                 'model': 'test.IssueSubmission',
                 'pk': 1,
@@ -116,13 +116,13 @@ class TestUploadViews(TestCase):
             'wb'
         )
 
-    @mock.patch('plupload.models.ResumableFile.save', lambda self: True)
+    @mock.patch('resumable_uploads.models.ResumableFile.save', lambda self: True)
     @mock.patch('django.apps.apps.get_model', lambda x, y: MyTestModel)
-    @mock.patch('plupload.views.os.remove', lambda self: True)
+    @mock.patch('resumable_uploads.views.os.remove', lambda self: True)
     def test_create_file(self):
         """ Test that files are created when no chunk is sent """
         request = self.factory.post(
-            '/plupload/',
+            '/resumable_uploads/',
             {
                 'model': 'test.IssueSubmission',
                 'pk': 1,
@@ -148,7 +148,7 @@ class TestUploadViews(TestCase):
 
     def test_get_upload_identifiers_or_404(self):
         request = self.factory.post(
-            '/plupload/',
+            '/resumable_uploads/',
             {'model': 'test.IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
@@ -160,7 +160,7 @@ class TestUploadViews(TestCase):
         )
 
         request = self.factory.post(
-            '/plupload/',
+            '/resumable_uploads/',
         )
 
         self.assertRaises(
@@ -174,7 +174,7 @@ class TestUploadViews(TestCase):
         import os
 
         request = self.factory.post(
-            '/plupload/',
+            '/resumable_uploads/',
             {'model': 'test.IssueSubmission', 'pk': 2, 'name': 'test.png'}
         )
 
@@ -203,7 +203,7 @@ class TestUploadViews(TestCase):
         import os
 
         request = self.factory.post(
-            '/plupload/',
+            '/resumable_uploads/',
             {'model': 'test.IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
@@ -211,7 +211,7 @@ class TestUploadViews(TestCase):
             upload_file(request)
 
         request = self.factory.post(
-            'plupload/upload_error',
+            'resumable_uploads/upload_error',
             {'model': 'test.IssueSubmission', 'pk': 1, 'name': 'test.png'}
         )
 
@@ -275,13 +275,13 @@ class TestHelpers(TestCase):
     def test_upload_exists(self):
         """ Test that the uploads exist """
 
-        with mock.patch('plupload.helpers.namespace_exists', lambda x, y: False):
+        with mock.patch('resumable_uploads.helpers.namespace_exists', lambda x, y: False):
             self.assertFalse(
                 upload_exists('test.IssueSubmission', '1', 'test.png'),
                 "The upload should not exists if the namespace does not exist"
             )
 
-        with mock.patch('plupload.helpers.namespace_exists', lambda x, y: True):
+        with mock.patch('resumable_uploads.helpers.namespace_exists', lambda x, y: True):
             with mock.patch('os.path.exists', lambda x: True):
                 self.assertTrue(
                     upload_exists('test.IssueSubmission', '1', 'test.png'),
