@@ -48,7 +48,8 @@ class PlUploadWidget(Input):
         self.widget_options['model_id'] = model_id
 
     def render(self, name, value, attrs=None):
-        final_attrs = self.build_attrs(attrs, type=self.input_type, name=name)
+        final_attrs = self.build_attrs(
+            attrs, extra_attrs={'type': self.input_type, 'name': name})
 
         template = get_template(self.template_name)
 
