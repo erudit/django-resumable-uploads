@@ -29,6 +29,7 @@ var create_uploader = function(params, filesizes) {
         url : params['url'],
         max_retries : 5,
         max_file_size : params['max_file_size'],
+        max_file_count: params['max_file_count'],
         chunk_size : params['chunk_size'],
         drop_element: params['drop_element'],
         unique_names : false,
@@ -109,14 +110,24 @@ var create_uploader = function(params, filesizes) {
                 };
             },
             FilesAdded: function(up, files) {
-                var filesAddedCount = $('#' + params['id']).data('files-added');
-                if (filesAddedCount) {
-                    $('#' + params['id']).data('files-added', filesAddedCount + files.length);
-                } else {
-                    $('#' + params['id']).data('files-added', files.length);
+                var max_file_count = params["max_file_count"];
+                var file_count = $('#filelist').children().length;
+                if (max_file_count === undefined) {
+                    max_file_count = 1;
                 }
 
                 plupload.each(files, function(file) {
+                    if (file_count >= max_file_count) {
+                        up.removeFile(file);
+                        return;
+                    }
+                    var filesAddedCount = $('#' + params['id']).data('files-added');
+                    if (filesAddedCount) {
+                        $('#' + params['id']).data('files-added', filesAddedCount + 1);
+                    } else {
+                        $('#' + params['id']).data('files-added', files.length);
+                    }
+
                     var fileStatus = '<span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</span>';
                     var fileDelete = '<a href="#" class="delete-file icon-upload icon-delete"></a>';
                     var fileName = file.name;
