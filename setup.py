@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="django-resumable-uploads",
-    version="1.0.3",
+    version="1.0.4",
     description="""
 django-resumable-uploads is a multi file upload app for django.
 Uses plupload""",
