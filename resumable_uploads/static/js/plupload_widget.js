@@ -121,6 +121,8 @@ var create_uploader = function(params, filesizes) {
                         up.removeFile(file);
                         return;
                     }
+                    file_count += 1;
+
                     var filesAddedCount = $('#' + params['id']).data('files-added');
                     if (filesAddedCount) {
                         $('#' + params['id']).data('files-added', filesAddedCount + 1);
