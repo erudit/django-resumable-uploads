@@ -10,7 +10,7 @@ from django.template.loader import get_template
 from django.conf import settings
 from django.template.context_processors import csrf
 from django.forms.utils import flatatt
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from resumable_uploads.models import ResumableFile
 
