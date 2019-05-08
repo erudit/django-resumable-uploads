@@ -7,7 +7,7 @@
 
 ## Requirements
 
-- Django 1.6+
+- Django 1.11+
 
 ## Getting started
 

@@ -5,6 +5,7 @@ import simplejson
 
 from django.forms.widgets import Input
 from django.utils import six
+from django.forms.widgets import get_default_renderer
 from django.utils.safestring import mark_safe
 from django.template.loader import get_template
 from django.conf import settings
@@ -47,7 +48,9 @@ class PlUploadWidget(Input):
         self.widget_options['model_name'] = model_name
         self.widget_options['model_id'] = model_id
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
+        if renderer is None:
+            renderer = get_default_renderer()
         final_attrs = self.build_attrs(
             attrs, extra_attrs={'type': self.input_type, 'name': name})
 
