@@ -1,13 +1,3 @@
-/* Icons - FontAwesome */
-.upload-table [class^="icon-"] {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 /* Upload table layout */
 .upload-table {
   width: 100%;
@@ -132,13 +122,13 @@
   font-size: 1em;
 }
 .icon-add:before {
-  content: "\f055";
+  content: "\e802";
 }
 .icon-upload:before {
-  content: "\f0ee";
+  content: "\e801";
 }
 .icon-delete:before {
-  content: "\f00d";
+  content: "\e803";
 }
 
 /* File type icons */
@@ -147,7 +137,7 @@
   color: rgba(0, 0, 0, 0.35);
 }
 .icon-file:before {
-  content: "\f016";
+  content: "\e800";
 }
 .icon-bmp:before,
 .icon-jpg:before,

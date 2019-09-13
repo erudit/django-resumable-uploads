@@ -28,7 +28,10 @@ class PlUploadWidget(Input):
             'js/resumable_uploads.js',
         )
         css = {
-            'all': ('css/plupload.css', )
+            'all': (
+                'css/fontawesome.css',
+                'css/plupload.css',
+            ),
         }
 
     def __init__(
