@@ -102,7 +102,8 @@ class PlUploadWidget(Input):
             'final_attrs': flatatt(final_attrs),
             'json_params': mark_safe(json.dumps(self.widget_options)),
             'files': resumable_file_values,
-            'files_json': mark_safe(simplejson.dumps(file_progress))
+            'files_json': mark_safe(simplejson.dumps(file_progress)),
+            'auto_upload': self.widget_options.get('auto_upload', False),
         }
 
         return mark_safe(

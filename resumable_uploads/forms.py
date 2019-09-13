@@ -23,6 +23,7 @@ class PlUploadFormField(FilePathField):
         # TODO: Customize runtimes
         options.setdefault('runtimes', 'html5,gears,silverlight')
         options.setdefault('max_retries', 5)
+        options.setdefault('auto_upload', False)
 
         widget = widget(
             widget_options=options

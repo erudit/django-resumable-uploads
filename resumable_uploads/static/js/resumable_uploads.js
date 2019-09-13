@@ -92,11 +92,10 @@ var create_uploader = function(params, filesizes) {
                 filesUploadingCount = (filesUploadingCount) ? parseInt(filesUploadingCount) - 1 : 0;
                 $('#' + params['id']).data('files-uploading', filesUploadingCount);
             },
-            PostInit: function() {
-                document.getElementById('uploadfiles').onclick = function() {
-                    uploader.start();
-                    return false;
-                };
+            PostInit: function(up) {
+                $('#uploadfiles').on('click', function() {
+                    up.start();
+                });
             },
             FilesAdded: function(up, files) {
                 var max_file_count = params["max_file_count"];
@@ -138,6 +137,11 @@ var create_uploader = function(params, filesizes) {
                     fileDelete +
                     '</td></tr>';
                 });
+
+                // Automatic upload of added files.
+                if (params['auto_upload']) {
+                    up.start();
+                }
             },
 
             UploadProgress: function(up, file) {
