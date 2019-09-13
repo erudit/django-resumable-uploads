@@ -15,6 +15,31 @@ var create_uploader = function(params, filesizes) {
         $('#' + params['id']).val(newVal);
     }
 
+    function removeIdFromUploadField(file_id) {
+        var currentVal = $('#' + params['id']).val();
+        var newVal = '';
+        if (currentVal) {
+            var ids = currentVal.split(',');
+            ids = ids.filter(function(el) {
+                return el !== String(file_id);
+            });
+            newVal = ids.join(',');
+        }
+        $('#' + params['id']).val(newVal);
+    }
+
+    function getMaxFileCount() {
+        return params['max_file_count'] !== undefined ? params['max_file_count'] : 1;
+    }
+
+    function getCurrentFileCount() {
+        return $('#filelist').children().length;
+    }
+
+    function triggerBrowseButton(up) {
+        up.disableBrowse(getCurrentFileCount() >= getMaxFileCount());
+    }
+
     // This object is used to keep track of the data that is transferred
     var upload = {
         file: null,
@@ -32,6 +57,11 @@ var create_uploader = function(params, filesizes) {
         silverlight_xap_url : params['STATIC_URL'] + 'js/Moxie.xap',
 
         init: {
+            init: function(up) {
+                // Disable the browse button if we have more files than the max allowed.
+                triggerBrowseButton(up);
+            },
+
             StateChanged: function(up) {
                 if (up.state == plupload.STARTED) {
                     for (var file_id in up.files) {
@@ -98,18 +128,11 @@ var create_uploader = function(params, filesizes) {
                 });
             },
             FilesAdded: function(up, files) {
-                var max_file_count = params["max_file_count"];
-                var file_count = $('#filelist').children().length;
-                if (max_file_count === undefined) {
-                    max_file_count = 1;
-                }
-
                 plupload.each(files, function(file) {
-                    if (file_count >= max_file_count) {
+                    if (getCurrentFileCount() >= getMaxFileCount()) {
                         up.removeFile(file);
                         return;
                     }
-                    file_count += 1;
 
                     var filesAddedCount = $('#' + params['id']).data('files-added');
                     if (filesAddedCount) {
@@ -142,6 +165,9 @@ var create_uploader = function(params, filesizes) {
                 if (params['auto_upload']) {
                     up.start();
                 }
+
+                // Disable the browse button if we have more files than the max allowed.
+                triggerBrowseButton(up);
             },
 
             UploadProgress: function(up, file) {
@@ -215,6 +241,7 @@ var create_uploader = function(params, filesizes) {
               async: false
             }).done(function(response){
                 if (fileAttrId) uploader.removeFile(fileAttrId);
+                removeIdFromUploadField(fileId);
                 $fileRow.remove();
                 filesizes[fileName] = undefined;
             });
@@ -225,6 +252,9 @@ var create_uploader = function(params, filesizes) {
             filesAddedCount = (filesAddedCount) ? parseInt(filesAddedCount) - 1 : 0;
             $('#' + params['id']).data('files-added', filesAddedCount);
         }
+
+        // Enable the browse button if we have less files than the max allowed.
+        triggerBrowseButton(uploader);
     });
 };
 
