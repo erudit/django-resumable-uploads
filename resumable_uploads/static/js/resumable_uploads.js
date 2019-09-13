@@ -22,18 +22,11 @@ var create_uploader = function(params, filesizes) {
     };
 
     var uploader = new plupload.Uploader({
-        browse_button: 'pickfiles',
-        container: 'upload-container',
-        // TODO: Customize runtimes
-        runtimes : 'html5,gears,silverlight',
-
         url : params['url'],
-        max_retries : 5,
         max_file_size : params['max_file_size'],
         max_file_count: params['max_file_count'],
         chunk_size : params['chunk_size'],
         drop_element: params['drop_element'],
-        unique_names : false,
         multipart_params: {
             "csrfmiddlewaretoken" : csrf_token,
             "model": String(params['model_name']),

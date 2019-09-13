@@ -18,6 +18,11 @@ class PlUploadFormField(FilePathField):
 
         options.setdefault('max_file_size', '100mb')
         options.setdefault('chunk_size', '1mb')
+        options.setdefault('browse_button', 'pickfiles')
+        options.setdefault('container', 'upload-container')
+        # TODO: Customize runtimes
+        options.setdefault('runtimes', 'html5,gears,silverlight')
+        options.setdefault('max_retries', 5)
 
         widget = widget(
             widget_options=options
