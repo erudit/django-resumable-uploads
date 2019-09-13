@@ -23,6 +23,7 @@ var create_uploader = function(params, filesizes) {
 
     var uploader = new plupload.Uploader({
         browse_button: 'pickfiles',
+        container: 'upload-container',
         // TODO: Customize runtimes
         runtimes : 'html5,gears,silverlight',
 
