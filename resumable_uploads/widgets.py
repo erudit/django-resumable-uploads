@@ -30,7 +30,7 @@ class PlUploadWidget(Input):
         css = {
             'all': (
                 'css/fontawesome.css',
-                'css/plupload.css',
+                'css/resumable_uploads.css',
             ),
         }
 
