@@ -1,7 +1,5 @@
 {% load i18n %}
 
-<input{{ final_attrs }} style="display: none;">
-
 <div id="upload-container" class="upload-container" data-json-params='{{ json_params|safe }}' data-filesizes='{{ files_json|safe }}'>
   <table class="upload-table">
     <thead>
@@ -61,6 +59,11 @@
         </td>
         <td class="file-size">
           <strong><span id="file-size-total"></span></strong>
+        </td>
+      </tr>
+      <tr id="input-row">
+        <td colspan="5">
+          <input{{ final_attrs }}>
         </td>
       </tr>
     </tfoot>

@@ -256,6 +256,18 @@ var create_uploader = function(params, filesizes) {
         // Enable the browse button if we have less files than the max allowed.
         triggerBrowseButton(uploader);
     });
+
+    // Set custom validation message for the input field.
+    var input = document.getElementById(params['id']);
+    input.oninvalid = function(ev) {
+        ev.target.setCustomValidity('');
+        if (!ev.target.validity.valid) {
+            ev.target.setCustomValidity(gettext('Veuillez ajouter un fichier.'));
+        }
+    };
+    input.oninput = function(ev) {
+        ev.target.setCustomValidity('');
+    };
 };
 
 $(document).ready(function(){
