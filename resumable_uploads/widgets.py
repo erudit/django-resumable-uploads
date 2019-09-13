@@ -25,7 +25,7 @@ class PlUploadWidget(Input):
         js = (
             'js/plupload/moxie.js',
             'js/plupload/plupload.full.min.js',
-            'js/plupload_widget.js',
+            'js/resumable_uploads.js',
         )
         css = {
             'all': ('css/plupload.css', )
