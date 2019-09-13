@@ -36,7 +36,7 @@ class PlUploadWidget(Input):
 
     def __init__(
             self, attrs=None, widget_options=None,
-            template_name='plupload/plupload_widget.html'):
+            template_name='resumable_uploads/resumable_uploads_widget.html'):
         self.widget_options = widget_options
         self.template_name = template_name
 
