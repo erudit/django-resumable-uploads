@@ -16,7 +16,7 @@
       {% for file in files %}
       <tr data-resumable-file-id="{{ file.id }}" data-resumable-file-name="{{ file.filename }}">
         <td class="file-type">
-          <span class="icon-file"></span>
+          <span class="icon-file icon-{{ file.type }}"></span>
         </td>
         <td class="file-name">
           {{ file.filename }}
