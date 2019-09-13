@@ -21,12 +21,7 @@ var create_uploader = function(params, filesizes) {
         offset: 0
     };
 
-    var uploader = new plupload.Uploader({
-        url : params['url'],
-        max_file_size : params['max_file_size'],
-        max_file_count: params['max_file_count'],
-        chunk_size : params['chunk_size'],
-        drop_element: params['drop_element'],
+    var options = {
         multipart_params: {
             "csrfmiddlewaretoken" : csrf_token,
             "model": String(params['model_name']),
@@ -163,7 +158,9 @@ var create_uploader = function(params, filesizes) {
             }
 
         }
-    });
+    };
+
+    var uploader = new plupload.Uploader($.extend(options, params))
 
     uploader.init();
 
