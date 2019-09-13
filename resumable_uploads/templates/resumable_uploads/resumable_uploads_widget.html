@@ -49,7 +49,14 @@
     <tfoot>
       <tr>
         <td colspan="2">
-          <a id="pickfiles" class="upload-action" href="javascript:;"><span class="icon-action icon-add"></span> {% trans "Ajouter les fichiers" %}</a>
+          <a id="pickfiles" class="upload-action" href="javascript:;">
+            <span class="icon-action icon-add"></span>
+            {% if max_file_count > 1 %}
+              {% trans "Ajouter les fichiers" %}
+            {% else %}
+              {% trans "Ajouter un fichier" %}
+            {% endif %}
+          </a>
           {% if not auto_upload %}
           <a id="uploadfiles" class="upload-action" href="javascript:;">
             <span class="icon-action icon-upload"></span>

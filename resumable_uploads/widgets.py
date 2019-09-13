@@ -104,6 +104,7 @@ class PlUploadWidget(Input):
             'files': resumable_file_values,
             'files_json': mark_safe(simplejson.dumps(file_progress)),
             'auto_upload': self.widget_options.get('auto_upload', False),
+            'max_file_count': self.widget_options.get('max_file_count', 1),
         }
 
         return mark_safe(
