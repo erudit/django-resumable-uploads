@@ -23,12 +23,15 @@ class PlUploadWidget(Input):
 
     class Media:
         js = (
-            'js/moxie.js',
-            'js/plupload.full.min.js',
-            'js/plupload_widget.js',
+            'js/plupload/moxie.js',
+            'js/plupload/plupload.full.min.js',
+            'js/resumable_uploads.js',
         )
         css = {
-            'all': ('css/plupload.css', )
+            'all': (
+                'css/fontawesome.css',
+                'css/resumable_uploads.css',
+            ),
         }
 
     def __init__(
