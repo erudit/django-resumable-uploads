@@ -183,8 +183,6 @@ var create_uploader = function(params, filesizes) {
                 uploader.stop();
                 console.warn('[plupload] stopped (HTTP Error)');
                 window.setTimeout(retry, 5000);
-
-                document.getElementById('console').appendChild(document.createTextNode("\nError #" + err.code + ": " + err.message));
             }
 
         }
