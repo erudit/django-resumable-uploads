@@ -36,7 +36,7 @@ class PlUploadWidget(Input):
 
     def __init__(
             self, attrs=None, widget_options=None,
-            template_name='plupload/plupload_widget.html'):
+            template_name='resumable_uploads/resumable_uploads_widget.html'):
         self.widget_options = widget_options
         self.template_name = template_name
 
@@ -79,6 +79,7 @@ class PlUploadWidget(Input):
                 'percent': rf.get_percent(),
                 'offset': rf.uploadsize,
                 'is_complete': rf.is_complete,
+                'type': rf.get_filename().rsplit('.', 1).pop().lower(),
             }
             for rf in resumable_files
         ]
@@ -101,7 +102,9 @@ class PlUploadWidget(Input):
             'final_attrs': flatatt(final_attrs),
             'json_params': mark_safe(json.dumps(self.widget_options)),
             'files': resumable_file_values,
-            'files_json': mark_safe(simplejson.dumps(file_progress))
+            'files_json': mark_safe(simplejson.dumps(file_progress)),
+            'auto_upload': self.widget_options.get('auto_upload', False),
+            'max_file_count': self.widget_options.get('max_file_count', 1),
         }
 
         return mark_safe(

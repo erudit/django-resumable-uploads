@@ -15,24 +15,38 @@ var create_uploader = function(params, filesizes) {
         $('#' + params['id']).val(newVal);
     }
 
+    function removeIdFromUploadField(file_id) {
+        var currentVal = $('#' + params['id']).val();
+        var newVal = '';
+        if (currentVal) {
+            var ids = currentVal.split(',');
+            ids = ids.filter(function(el) {
+                return el !== String(file_id);
+            });
+            newVal = ids.join(',');
+        }
+        $('#' + params['id']).val(newVal);
+    }
+
+    function getMaxFileCount() {
+        return params['max_file_count'] !== undefined ? params['max_file_count'] : 1;
+    }
+
+    function getCurrentFileCount() {
+        return $('#filelist').children().length;
+    }
+
+    function triggerBrowseButton(up) {
+        up.disableBrowse(getCurrentFileCount() >= getMaxFileCount());
+    }
+
     // This object is used to keep track of the data that is transferred
     var upload = {
         file: null,
         offset: 0
     };
 
-    var uploader = new plupload.Uploader({
-        browse_button: 'pickfiles',
-        // TODO: Customize runtimes
-        runtimes : 'html5,gears,silverlight',
-
-        url : params['url'],
-        max_retries : 5,
-        max_file_size : params['max_file_size'],
-        max_file_count: params['max_file_count'],
-        chunk_size : params['chunk_size'],
-        drop_element: params['drop_element'],
-        unique_names : false,
+    var options = {
         multipart_params: {
             "csrfmiddlewaretoken" : csrf_token,
             "model": String(params['model_name']),
@@ -43,6 +57,11 @@ var create_uploader = function(params, filesizes) {
         silverlight_xap_url : params['STATIC_URL'] + 'js/Moxie.xap',
 
         init: {
+            init: function(up) {
+                // Disable the browse button if we have more files than the max allowed.
+                triggerBrowseButton(up);
+            },
+
             StateChanged: function(up) {
                 if (up.state == plupload.STARTED) {
                     for (var file_id in up.files) {
@@ -103,25 +122,17 @@ var create_uploader = function(params, filesizes) {
                 filesUploadingCount = (filesUploadingCount) ? parseInt(filesUploadingCount) - 1 : 0;
                 $('#' + params['id']).data('files-uploading', filesUploadingCount);
             },
-            PostInit: function() {
-                document.getElementById('uploadfiles').onclick = function() {
-                    uploader.start();
-                    return false;
-                };
+            PostInit: function(up) {
+                $('#uploadfiles').on('click', function() {
+                    up.start();
+                });
             },
             FilesAdded: function(up, files) {
-                var max_file_count = params["max_file_count"];
-                var file_count = $('#filelist').children().length;
-                if (max_file_count === undefined) {
-                    max_file_count = 1;
-                }
-
                 plupload.each(files, function(file) {
-                    if (file_count >= max_file_count) {
+                    if (getCurrentFileCount() >= getMaxFileCount()) {
                         up.removeFile(file);
                         return;
                     }
-                    file_count += 1;
 
                     var filesAddedCount = $('#' + params['id']).data('files-added');
                     if (filesAddedCount) {
@@ -149,6 +160,14 @@ var create_uploader = function(params, filesizes) {
                     fileDelete +
                     '</td></tr>';
                 });
+
+                // Automatic upload of added files.
+                if (params['auto_upload']) {
+                    up.start();
+                }
+
+                // Disable the browse button if we have more files than the max allowed.
+                triggerBrowseButton(up);
             },
 
             UploadProgress: function(up, file) {
@@ -164,12 +183,12 @@ var create_uploader = function(params, filesizes) {
                 uploader.stop();
                 console.warn('[plupload] stopped (HTTP Error)');
                 window.setTimeout(retry, 5000);
-
-                document.getElementById('console').appendChild(document.createTextNode("\nError #" + err.code + ": " + err.message));
             }
 
         }
-    });
+    };
+
+    var uploader = new plupload.Uploader($.extend(options, params))
 
     uploader.init();
 
@@ -220,6 +239,7 @@ var create_uploader = function(params, filesizes) {
               async: false
             }).done(function(response){
                 if (fileAttrId) uploader.removeFile(fileAttrId);
+                removeIdFromUploadField(fileId);
                 $fileRow.remove();
                 filesizes[fileName] = undefined;
             });
@@ -230,7 +250,22 @@ var create_uploader = function(params, filesizes) {
             filesAddedCount = (filesAddedCount) ? parseInt(filesAddedCount) - 1 : 0;
             $('#' + params['id']).data('files-added', filesAddedCount);
         }
+
+        // Enable the browse button if we have less files than the max allowed.
+        triggerBrowseButton(uploader);
     });
+
+    // Set custom validation message for the input field.
+    var input = document.getElementById(params['id']);
+    input.oninvalid = function(ev) {
+        ev.target.setCustomValidity('');
+        if (!ev.target.validity.valid) {
+            ev.target.setCustomValidity(gettext('Veuillez ajouter un fichier.'));
+        }
+    };
+    input.oninput = function(ev) {
+        ev.target.setCustomValidity('');
+    };
 };
 
 $(document).ready(function(){

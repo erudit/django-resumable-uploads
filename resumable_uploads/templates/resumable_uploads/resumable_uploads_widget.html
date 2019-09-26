@@ -1,8 +1,6 @@
 {% load i18n %}
 
-<input{{ final_attrs }} style="display: none;">
-
-<div class="upload-container" data-json-params="{{ json_params|safe }}" data-filesizes="{{ files_json|safe }}">
+<div id="upload-container" class="upload-container" data-json-params='{{ json_params|safe }}' data-filesizes='{{ files_json|safe }}'>
   <table class="upload-table">
     <thead>
       <tr>
@@ -16,7 +14,7 @@
       {% for file in files %}
       <tr data-resumable-file-id="{{ file.id }}" data-resumable-file-name="{{ file.filename }}">
         <td class="file-type">
-          <span class="icon-file"></span>
+          <span class="icon-file icon-{{ file.type }}"></span>
         </td>
         <td class="file-name">
           {{ file.filename }}
@@ -35,7 +33,7 @@
       <tr>
         <td colspan="5">{% trans "Votre navigateur ne supporte pas les technologies Flash, Silverlight ou HTML5." %}</td>
       </tr>
-      {% endcomment %}
+      TODO: faire fonctionner le drag & drop
       <tr id="drop_element" class="drop">
         <td colspan="5">
           <div class="drop-circle">
@@ -46,15 +44,33 @@
           </div>
         </td>
       </tr>
+      {% endcomment %}
     </tbody>
     <tfoot>
       <tr>
         <td colspan="2">
-          <a id="pickfiles" class="upload-action" href="javascript:;"><span class="icon-action icon-add"></span> {% trans "Ajouter les fichiers" %}</a>
-          <a id="uploadfiles" class="upload-action" href="javascript:;"><span class="icon-action icon-upload"></span> {% trans "Téléverser" %}</a>
+          <a id="pickfiles" class="upload-action" href="javascript:;">
+            <span class="icon-action icon-add"></span>
+            {% if max_file_count > 1 %}
+              {% trans "Ajouter les fichiers" %}
+            {% else %}
+              {% trans "Ajouter un fichier" %}
+            {% endif %}
+          </a>
+          {% if not auto_upload %}
+          <a id="uploadfiles" class="upload-action" href="javascript:;">
+            <span class="icon-action icon-upload"></span>
+            {% trans "Téléverser" %}
+          </a>
+          {% endif %}
         </td>
         <td class="file-size">
           <strong><span id="file-size-total"></span></strong>
+        </td>
+      </tr>
+      <tr id="input-row">
+        <td colspan="5">
+          <input{{ final_attrs }}>
         </td>
       </tr>
     </tfoot>
