@@ -258,13 +258,13 @@ var create_uploader = function(params, filesizes) {
     // Set custom validation message for the input field.
     var input = document.getElementById(params['id']);
     input.oninvalid = function(ev) {
-        ev.target.setCustomValidity('');
+        ev.target.setCustomValidity();
         if (!ev.target.validity.valid) {
             ev.target.setCustomValidity(gettext('Veuillez ajouter un fichier.'));
         }
     };
     input.oninput = function(ev) {
-        ev.target.setCustomValidity('');
+        ev.target.setCustomValidity();
     };
 };
 
