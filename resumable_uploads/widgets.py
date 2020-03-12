@@ -2,9 +2,9 @@ import json
 from os import path
 
 import simplejson
+import six
 
 from django.forms.widgets import Input
-from django.utils import six
 from django.forms.widgets import get_default_renderer
 from django.utils.safestring import mark_safe
 from django.template.loader import get_template
